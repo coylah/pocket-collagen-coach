@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useState, useRef, useEffect, type ReactElement } from 'react'
+import { useState, useRef, useEffect } from 'react'
 
 export const Route = createFileRoute('/')({
   component: App,
@@ -53,108 +53,67 @@ TONE: Warm, direct, no-nonsense British. Knowledgeable best friend. Never preach
 
 WHEN ANALYSING PHOTOS: Identify co-factors present, what is missing, give clear practical recommendations.`
 
-const ICONS: Record<string, ReactElement> = {
-  fridge: (
-    <svg width="48" height="48" viewBox="0 0 28 28" fill="none" stroke="#8B1A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="6" y="3" width="16" height="22" rx="2"/>
-      <line x1="6" y1="11" x2="22" y2="11"/>
-      <line x1="11" y1="7" x2="11" y2="9"/>
-      <line x1="11" y1="15" x2="11" y2="20"/>
-    </svg>
-  ),
-  menu: (
-    <svg width="48" height="48" viewBox="0 0 28 28" fill="none" stroke="#8B1A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="5" y="3" width="18" height="22" rx="2"/>
-      <line x1="9" y1="9" x2="19" y2="9"/>
-      <line x1="9" y1="14" x2="19" y2="14"/>
-      <line x1="9" y1="19" x2="15" y2="19"/>
-    </svg>
-  ),
-  supermarket: (
-    <svg width="48" height="48" viewBox="0 0 28 28" fill="none" stroke="#8B1A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="4" y="6" width="20" height="16" rx="2"/>
-      <line x1="4" y1="11" x2="24" y2="11"/>
-      <line x1="9" y1="6" x2="9" y2="22"/>
-      <line x1="14" y1="6" x2="14" y2="22"/>
-      <line x1="19" y1="6" x2="19" y2="22"/>
-    </svg>
-  ),
-  recipe: (
-    <svg width="48" height="48" viewBox="0 0 28 28" fill="none" stroke="#8B1A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M8 20 C8 20 7 12 14 12 C21 12 20 20 20 20"/>
-      <line x1="6" y1="20" x2="22" y2="20"/>
-      <line x1="14" y1="12" x2="14" y2="8"/>
-      <path d="M11 8 C11 8 11 5 14 5 C17 5 17 8 17 8"/>
-    </svg>
-  ),
-  ask: (
-    <svg width="48" height="48" viewBox="0 0 28 28" fill="none" stroke="#8B1A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M5 4 H23 A2 2 0 0 1 25 6 V17 A2 2 0 0 1 23 19 H15 L9 24 V19 H5 A2 2 0 0 1 3 17 V6 A2 2 0 0 1 5 4 Z"/>
-      <line x1="14" y1="9" x2="14" y2="14"/>
-      <circle cx="14" cy="16.5" r="0.75" fill="#8B1A2B"/>
-    </svg>
-  ),
-  quiz: (
-    <svg width="48" height="48" viewBox="0 0 28 28" fill="none" stroke="#8B1A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="4" y="3" width="20" height="22" rx="2"/>
-      <line x1="9" y1="9" x2="19" y2="9"/>
-      <polyline points="9,14 11.5,16.5 15.5,12"/>
-      <polyline points="9,20 11.5,22.5 15.5,18"/>
-    </svg>
-  ),
+// ─── HISTORY HELPERS ───────────────────────────────────────────────────────
+const MAX_HISTORY = 10
+
+interface SavedConversation {
+  id: string
+  modeId: string
+  modeLabel: string
+  date: string
+  messages: any[]
 }
 
-const CARD_ICONS: Record<string, ReactElement> = {
-  fridge: (
-    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#8B1A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="6" y="3" width="16" height="22" rx="2"/>
-      <line x1="6" y1="11" x2="22" y2="11"/>
-      <line x1="11" y1="7" x2="11" y2="9"/>
-      <line x1="11" y1="15" x2="11" y2="20"/>
-    </svg>
-  ),
-  menu: (
-    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#8B1A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="5" y="3" width="18" height="22" rx="2"/>
-      <line x1="9" y1="9" x2="19" y2="9"/>
-      <line x1="9" y1="14" x2="19" y2="14"/>
-      <line x1="9" y1="19" x2="15" y2="19"/>
-    </svg>
-  ),
-  supermarket: (
-    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#8B1A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="4" y="6" width="20" height="16" rx="2"/>
-      <line x1="4" y1="11" x2="24" y2="11"/>
-      <line x1="9" y1="6" x2="9" y2="22"/>
-      <line x1="14" y1="6" x2="14" y2="22"/>
-      <line x1="19" y1="6" x2="19" y2="22"/>
-    </svg>
-  ),
-  recipe: (
-    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#8B1A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M8 20 C8 20 7 12 14 12 C21 12 20 20 20 20"/>
-      <line x1="6" y1="20" x2="22" y2="20"/>
-      <line x1="14" y1="12" x2="14" y2="8"/>
-      <path d="M11 8 C11 8 11 5 14 5 C17 5 17 8 17 8"/>
-    </svg>
-  ),
-  ask: (
-    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#8B1A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M5 4 H23 A2 2 0 0 1 25 6 V17 A2 2 0 0 1 23 19 H15 L9 24 V19 H5 A2 2 0 0 1 3 17 V6 A2 2 0 0 1 5 4 Z"/>
-      <line x1="14" y1="9" x2="14" y2="14"/>
-      <circle cx="14" cy="16.5" r="0.75" fill="#8B1A2B"/>
-    </svg>
-  ),
-  quiz: (
-    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#8B1A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="4" y="3" width="20" height="22" rx="2"/>
-      <line x1="9" y1="9" x2="19" y2="9"/>
-      <polyline points="9,14 11.5,16.5 15.5,12"/>
-      <polyline points="9,20 11.5,22.5 15.5,18"/>
-    </svg>
-  ),
+function loadHistory(): SavedConversation[] {
+  try { return JSON.parse(localStorage.getItem('pcc_history') || '[]') } catch { return [] }
 }
 
+function saveConversation(modeId: string, modeLabel: string, messages: any[]) {
+  if (messages.length === 0) return
+  const history = loadHistory()
+  const existing = history.findIndex(h => h.modeId === modeId && !h.id.startsWith('saved_'))
+  const entry: SavedConversation = {
+    id: `saved_${Date.now()}`,
+    modeId,
+    modeLabel,
+    date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }),
+    messages,
+  }
+  if (existing >= 0) history.splice(existing, 1)
+  history.unshift(entry)
+  if (history.length > MAX_HISTORY) history.splice(MAX_HISTORY)
+  localStorage.setItem('pcc_history', JSON.stringify(history))
+}
+
+function loadLastSession(): { modeId: string | null; messages: any[] } {
+  try { return JSON.parse(localStorage.getItem('pcc_last_session') || 'null') || { modeId: null, messages: [] } } catch { return { modeId: null, messages: [] } }
+}
+
+function saveLastSession(modeId: string, messages: any[]) {
+  localStorage.setItem('pcc_last_session', JSON.stringify({ modeId, messages }))
+}
+
+// ─── ICONS ─────────────────────────────────────────────────────────────────
+const ICONS: Record<string, JSX.Element> = {
+  fridge: (<svg width="48" height="48" viewBox="0 0 28 28" fill="none" stroke="#8B1A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="3" width="16" height="22" rx="2"/><line x1="6" y1="11" x2="22" y2="11"/><line x1="11" y1="7" x2="11" y2="9"/><line x1="11" y1="15" x2="11" y2="20"/></svg>),
+  menu: (<svg width="48" height="48" viewBox="0 0 28 28" fill="none" stroke="#8B1A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="3" width="18" height="22" rx="2"/><line x1="9" y1="9" x2="19" y2="9"/><line x1="9" y1="14" x2="19" y2="14"/><line x1="9" y1="19" x2="15" y2="19"/></svg>),
+  supermarket: (<svg width="48" height="48" viewBox="0 0 28 28" fill="none" stroke="#8B1A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="6" width="20" height="16" rx="2"/><line x1="4" y1="11" x2="24" y2="11"/><line x1="9" y1="6" x2="9" y2="22"/><line x1="14" y1="6" x2="14" y2="22"/><line x1="19" y1="6" x2="19" y2="22"/></svg>),
+  recipe: (<svg width="48" height="48" viewBox="0 0 28 28" fill="none" stroke="#8B1A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 20 C8 20 7 12 14 12 C21 12 20 20 20 20"/><line x1="6" y1="20" x2="22" y2="20"/><line x1="14" y1="12" x2="14" y2="8"/><path d="M11 8 C11 8 11 5 14 5 C17 5 17 8 17 8"/></svg>),
+  ask: (<svg width="48" height="48" viewBox="0 0 28 28" fill="none" stroke="#8B1A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 4 H23 A2 2 0 0 1 25 6 V17 A2 2 0 0 1 23 19 H15 L9 24 V19 H5 A2 2 0 0 1 3 17 V6 A2 2 0 0 1 5 4 Z"/><line x1="14" y1="9" x2="14" y2="14"/><circle cx="14" cy="16.5" r="0.75" fill="#8B1A2B"/></svg>),
+  quiz: (<svg width="48" height="48" viewBox="0 0 28 28" fill="none" stroke="#8B1A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="3" width="20" height="22" rx="2"/><line x1="9" y1="9" x2="19" y2="9"/><polyline points="9,14 11.5,16.5 15.5,12"/><polyline points="9,20 11.5,22.5 15.5,18"/></svg>),
+  history: (<svg width="48" height="48" viewBox="0 0 28 28" fill="none" stroke="#8B1A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="14" cy="14" r="10"/><polyline points="14,8 14,14 18,16"/></svg>),
+}
+
+const CARD_ICONS: Record<string, JSX.Element> = {
+  fridge: (<svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#8B1A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="3" width="16" height="22" rx="2"/><line x1="6" y1="11" x2="22" y2="11"/><line x1="11" y1="7" x2="11" y2="9"/><line x1="11" y1="15" x2="11" y2="20"/></svg>),
+  menu: (<svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#8B1A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="3" width="18" height="22" rx="2"/><line x1="9" y1="9" x2="19" y2="9"/><line x1="9" y1="14" x2="19" y2="14"/><line x1="9" y1="19" x2="15" y2="19"/></svg>),
+  supermarket: (<svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#8B1A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="6" width="20" height="16" rx="2"/><line x1="4" y1="11" x2="24" y2="11"/><line x1="9" y1="6" x2="9" y2="22"/><line x1="14" y1="6" x2="14" y2="22"/><line x1="19" y1="6" x2="19" y2="22"/></svg>),
+  recipe: (<svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#8B1A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 20 C8 20 7 12 14 12 C21 12 20 20 20 20"/><line x1="6" y1="20" x2="22" y2="20"/><line x1="14" y1="12" x2="14" y2="8"/><path d="M11 8 C11 8 11 5 14 5 C17 5 17 8 17 8"/></svg>),
+  ask: (<svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#8B1A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 4 H23 A2 2 0 0 1 25 6 V17 A2 2 0 0 1 23 19 H15 L9 24 V19 H5 A2 2 0 0 1 3 17 V6 A2 2 0 0 1 5 4 Z"/><line x1="14" y1="9" x2="14" y2="14"/><circle cx="14" cy="16.5" r="0.75" fill="#8B1A2B"/></svg>),
+  quiz: (<svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#8B1A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="3" width="20" height="22" rx="2"/><line x1="9" y1="9" x2="19" y2="9"/><polyline points="9,14 11.5,16.5 15.5,12"/><polyline points="9,20 11.5,22.5 15.5,18"/></svg>),
+}
+
+// ─── MODES ─────────────────────────────────────────────────────────────────
 interface Mode {
   id: string
   badge: string
@@ -174,6 +133,7 @@ const MODES: Mode[] = [
   { id: 'quiz', badge: 'PERSONALISE', label: 'Take the food quiz', description: "Tell me what you love, what you hate and any foods you avoid — I'll tailor every recommendation around you.", photo: false, placeholder: null, autoPrompt: null },
 ]
 
+// ─── QUIZ DATA ──────────────────────────────────────────────────────────────
 const FOOD_OPTIONS = [
   { id: 'salmon', label: 'Salmon' }, { id: 'mackerel', label: 'Mackerel' },
   { id: 'sardines', label: 'Sardines' }, { id: 'tuna', label: 'Tuna' },
@@ -197,21 +157,19 @@ const FOOD_OPTIONS = [
 ]
 
 const DIET_OPTIONS = [
-  { id: 'none', label: 'No restrictions' },
-  { id: 'vegetarian', label: 'Vegetarian' },
-  { id: 'vegan', label: 'Vegan' },
-  { id: 'pescatarian', label: 'Pescatarian' },
-  { id: 'gluten_free', label: 'Gluten free' },
-  { id: 'dairy_free', label: 'Dairy free' },
+  { id: 'none', label: 'No restrictions' }, { id: 'vegetarian', label: 'Vegetarian' },
+  { id: 'vegan', label: 'Vegan' }, { id: 'pescatarian', label: 'Pescatarian' },
+  { id: 'gluten_free', label: 'Gluten free' }, { id: 'dairy_free', label: 'Dairy free' },
   { id: 'nut_allergy', label: 'Nut allergy' },
 ]
 
 const QUIZ_STEPS = [
   { key: 'diet', title: 'Any dietary needs?', subtitle: "Select all that apply — I'll never suggest something that doesn't work for you.", options: DIET_OPTIONS },
   { key: 'loves', title: 'Foods you love', subtitle: 'Pick everything you enjoy — the more you tell me, the better I can build around you.', options: FOOD_OPTIONS },
-  { key: 'dislikes', title: "Foods to avoid", subtitle: "Pick anything you dislike or won't eat — I'll keep these out of every recommendation.", options: FOOD_OPTIONS },
+  { key: 'dislikes', title: 'Foods to avoid', subtitle: "Pick anything you dislike or won't eat — I'll keep these out of every recommendation.", options: FOOD_OPTIONS },
 ]
 
+// ─── HELPERS ────────────────────────────────────────────────────────────────
 const detectPlatform = () => {
   const ua = navigator.userAgent
   if (/iphone|ipad|ipod/i.test(ua)) return 'ios'
@@ -228,28 +186,25 @@ const SCRIPT = "'Great Vibes', cursive"
 const SERIF = "'Georgia', 'Times New Roman', serif"
 const SANS = "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
 
+// ─── INSTALL MODAL ──────────────────────────────────────────────────────────
 function InstallModal({ onDismiss }: { onDismiss: () => void }) {
   const [platform, setPlatform] = useState<string | null>(null)
   useEffect(() => { setPlatform(detectPlatform()) }, [])
-
   const stepStyle: React.CSSProperties = { display: 'flex', alignItems: 'flex-start', gap: 14, fontFamily: SANS, fontSize: 14, color: '#333', lineHeight: 1.5 }
   const numStyle: React.CSSProperties = { background: C, color: '#fff', borderRadius: '50%', width: 26, height: 26, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 'bold', flexShrink: 0 }
-
   return (
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 100, display: 'flex', alignItems: 'flex-end' }}>
       <div style={{ background: '#FFF', borderRadius: '24px 24px 0 0', padding: '32px 28px 48px', width: '100%', maxHeight: '85vh', overflowY: 'auto' }}>
         <div style={{ fontFamily: SCRIPT, color: C, fontSize: 22, marginBottom: 4 }}>Love Coylah</div>
         <h2 style={{ fontFamily: SERIF, fontSize: 22, fontWeight: 'bold', color: '#111', marginBottom: 10 }}>Add to your home screen</h2>
         <p style={{ fontFamily: SANS, fontSize: 14, color: '#555', lineHeight: 1.6, marginBottom: 20 }}>Get the full app experience — one tap from your home screen, no browser bar needed.</p>
-
         {platform === null && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 20 }}>
-            {['📱 I\'m on iPhone / iPad', '🤖 I\'m on Android', '💻 I\'m on desktop'].map((label, i) => (
+            {["📱 I'm on iPhone / iPad", "🤖 I'm on Android", "💻 I'm on desktop"].map((label, i) => (
               <button key={i} onClick={() => setPlatform(['ios', 'android', 'other'][i])} style={{ background: '#FBF7F6', border: '1.5px solid #EDDFDB', borderRadius: 12, padding: '14px 18px', fontFamily: SERIF, fontSize: 15, cursor: 'pointer', textAlign: 'left', color: '#111' }}>{label}</button>
             ))}
           </div>
         )}
-
         {platform === 'ios' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 24 }}>
             <div style={stepStyle}><span style={numStyle}>1</span><span>Tap the <strong>Share button ⎋</strong> at the bottom of Safari</span></div>
@@ -257,7 +212,6 @@ function InstallModal({ onDismiss }: { onDismiss: () => void }) {
             <div style={stepStyle}><span style={numStyle}>3</span><span>Tap <strong>Add</strong> to confirm</span></div>
           </div>
         )}
-
         {platform === 'android' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 24 }}>
             <div style={stepStyle}><span style={numStyle}>1</span><span>Tap the <strong>menu icon ⋮</strong> in Chrome</span></div>
@@ -265,13 +219,11 @@ function InstallModal({ onDismiss }: { onDismiss: () => void }) {
             <div style={stepStyle}><span style={numStyle}>3</span><span>Rename to <strong>Collagen Coach</strong> then tap Add</span></div>
           </div>
         )}
-
         {platform === 'other' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 24 }}>
             <div style={stepStyle}><span style={numStyle}>✓</span><span>Bookmark this page, or open on your phone to add to home screen.</span></div>
           </div>
         )}
-
         <button onClick={onDismiss} style={{ width: '100%', background: C, color: '#fff', border: 'none', borderRadius: 50, padding: '16px 24px', fontFamily: SERIF, fontSize: 16, fontWeight: 'bold', cursor: 'pointer' }}>
           {platform ? "Got it — let's go ✦" : 'Maybe later'}
         </button>
@@ -280,18 +232,17 @@ function InstallModal({ onDismiss }: { onDismiss: () => void }) {
   )
 }
 
+// ─── QUIZ SCREEN ────────────────────────────────────────────────────────────
 function QuizScreen({ onDone, onBack }: { onDone: (prefs: any) => void; onBack: () => void }) {
   const [step, setStep] = useState(0)
   const [answers, setAnswers] = useState<Record<string, string[]>>({ diet: [], loves: [], dislikes: [] })
   const current = QUIZ_STEPS[step]
-
   const toggle = (id: string) => {
     setAnswers(prev => {
       const arr = prev[current.key]
       return { ...prev, [current.key]: arr.includes(id) ? arr.filter(x => x !== id) : [...arr, id] }
     })
   }
-
   const next = () => {
     if (step < QUIZ_STEPS.length - 1) { setStep(step + 1) }
     else {
@@ -303,9 +254,7 @@ function QuizScreen({ onDone, onBack }: { onDone: (prefs: any) => void; onBack: 
       onDone(prefs)
     }
   }
-
   const progress = ((step + 1) / QUIZ_STEPS.length) * 100
-
   return (
     <div style={{ minHeight: '100vh', background: '#FFF', fontFamily: SERIF, display: 'flex', flexDirection: 'column' }}>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap'); *, *::before, *::after { box-sizing: border-box; } body { margin: 0; padding: 0; }`}</style>
@@ -346,6 +295,44 @@ function QuizScreen({ onDone, onBack }: { onDone: (prefs: any) => void; onBack: 
   )
 }
 
+// ─── HISTORY SCREEN ─────────────────────────────────────────────────────────
+function HistoryScreen({ onBack, onRestore }: { onBack: () => void; onRestore: (conv: SavedConversation) => void }) {
+  const history = loadHistory()
+  return (
+    <div style={{ minHeight: '100vh', background: '#FFF', fontFamily: SERIF, display: 'flex', flexDirection: 'column' }}>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap'); *, *::before, *::after { box-sizing: border-box; } body { margin: 0; padding: 0; }`}</style>
+      <div style={{ background: '#FFF', borderBottom: '1px solid #F0E8E4', padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <button onClick={onBack} style={{ background: 'none', border: 'none', fontSize: 22, cursor: 'pointer', color: C, padding: '0 4px' }}>←</button>
+        <div>
+          <div style={{ fontFamily: SCRIPT, color: C, fontSize: 18, lineHeight: 1 }}>Love Coylah</div>
+          <div style={{ fontFamily: SANS, fontSize: 13, fontWeight: '600', color: '#111', marginTop: 2 }}>Recent conversations</div>
+        </div>
+      </div>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '20px' }}>
+        {history.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '60px 24px', color: '#999', fontFamily: SANS, fontSize: 14 }}>
+            No conversations yet. Start chatting and they will appear here.
+          </div>
+        ) : (
+          history.map(conv => (
+            <button key={conv.id} onClick={() => onRestore(conv)} style={{ width: '100%', background: '#FFF', border: '1px solid #EDDFDB', borderRadius: 14, padding: '16px 18px', marginBottom: 12, display: 'flex', flexDirection: 'column', cursor: 'pointer', textAlign: 'left', boxShadow: '0 1px 4px rgba(139,26,43,0.05)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                <span style={{ background: '#F9ECEE', color: C, fontSize: 10, fontFamily: SANS, fontWeight: '700', letterSpacing: '0.1em', padding: '3px 8px', borderRadius: 50 }}>{conv.modeLabel.toUpperCase()}</span>
+                <span style={{ fontFamily: SANS, fontSize: 11, color: '#BBB' }}>{conv.date}</span>
+              </div>
+              <div style={{ fontFamily: SERIF, fontSize: 15, fontWeight: 'bold', color: '#111', marginBottom: 4 }}>{conv.modeLabel}</div>
+              <div style={{ fontFamily: SANS, fontSize: 13, color: '#888', lineHeight: 1.5 }}>
+                {conv.messages.find((m: any) => m.role === 'assistant')?.content?.slice(0, 80) || 'Conversation'}...
+              </div>
+            </button>
+          ))
+        )}
+      </div>
+    </div>
+  )
+}
+
+// ─── MAIN APP ───────────────────────────────────────────────────────────────
 function App() {
   const [screen, setScreen] = useState('home')
   const [mode, setMode] = useState<Mode | null>(null)
@@ -363,7 +350,18 @@ function App() {
   const galleryRef = useRef<HTMLInputElement>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
 
+  // Restore last session on mount
   useEffect(() => {
+    const last = loadLastSession()
+    if (last.modeId && last.messages.length > 0) {
+      const lastMode = MODES.find(m => m.id === last.modeId)
+      if (lastMode) {
+        setMode(lastMode)
+        setMessages(last.messages)
+        setScreen('chat')
+        return
+      }
+    }
     if (!isStandalone()) {
       const dismissed = localStorage.getItem('pcc_install_dismissed')
       if (!dismissed) setTimeout(() => setShowInstall(true), 1200)
@@ -374,6 +372,14 @@ function App() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, loading])
 
+  // Save session whenever messages change
+  useEffect(() => {
+    if (mode && messages.length > 0) {
+      saveLastSession(mode.id, messages)
+      saveConversation(mode.id, mode.label, messages)
+    }
+  }, [messages, mode])
+
   const dismissInstall = () => {
     setShowInstall(false)
     localStorage.setItem('pcc_install_dismissed', 'true')
@@ -382,6 +388,14 @@ function App() {
   const selectMode = (m: Mode) => {
     if (m.id === 'quiz') { setScreen('quiz'); return }
     setMode(m); setMessages([]); setPendingImage(null); setPendingB64(null); setInput(''); setScreen('chat')
+    localStorage.removeItem('pcc_last_session')
+  }
+
+  const goHome = () => {
+    if (mode && messages.length > 0) {
+      saveConversation(mode.id, mode.label, messages)
+    }
+    setScreen('home')
   }
 
   const buildSystemPrompt = () => {
@@ -435,6 +449,16 @@ function App() {
     <QuizScreen onBack={() => setScreen('home')} onDone={prefs => { setUserPrefs(prefs); setScreen('home') }} />
   )
 
+  if (screen === 'history') return (
+    <HistoryScreen
+      onBack={() => setScreen('home')}
+      onRestore={(conv) => {
+        const m = MODES.find(m => m.id === conv.modeId)
+        if (m) { setMode(m); setMessages(conv.messages); setScreen('chat') }
+      }}
+    />
+  )
+
   if (screen === 'home') return (
     <div style={{ minHeight: '100vh', background: '#FFF', fontFamily: SERIF, display: 'flex', flexDirection: 'column' }}>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap'); *, *::before, *::after { box-sizing: border-box; } body { margin: 0; padding: 0; }`}</style>
@@ -445,13 +469,16 @@ function App() {
           <div style={{ fontFamily: SCRIPT, color: C, fontSize: 20, lineHeight: 1 }}>Love Coylah</div>
           <div style={{ fontFamily: SERIF, color: '#111', fontSize: 12, fontWeight: '600', marginTop: 3 }}>Pocket Collagen Coach</div>
         </div>
-        <button onClick={() => setShowInstall(true)} style={{ background: 'none', border: `1.5px solid ${C}`, color: C, borderRadius: 50, padding: '6px 14px', fontSize: 11, fontFamily: SANS, fontWeight: '600', cursor: 'pointer', whiteSpace: 'nowrap' }}>+ Add to home</button>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button onClick={() => setScreen('history')} style={{ background: 'none', border: `1.5px solid #EDDFDB`, color: '#888', borderRadius: 50, padding: '6px 14px', fontSize: 11, fontFamily: SANS, fontWeight: '600', cursor: 'pointer' }}>History</button>
+          <button onClick={() => setShowInstall(true)} style={{ background: 'none', border: `1.5px solid ${C}`, color: C, borderRadius: 50, padding: '6px 14px', fontSize: 11, fontFamily: SANS, fontWeight: '600', cursor: 'pointer', whiteSpace: 'nowrap' }}>+ Add to home</button>
+        </div>
       </nav>
 
       <div style={{ padding: '32px 28px 20px' }}>
         <div style={{ fontSize: 10, letterSpacing: '0.18em', color: C, fontFamily: SANS, marginBottom: 10 }}>— YOUR SKIN-FOOD COACH —</div>
         <div style={{ fontFamily: SCRIPT, color: C, fontSize: 32, lineHeight: 1.1, marginBottom: 4 }}>Love Coylah</div>
-        <h1 style={{ fontFamily: SERIF, fontSize: 46, fontWeight: 'bold', color: '#111', lineHeight: 1.1, marginBottom: 14, margin: '0 0 14px' }}>Pocket<br />Collagen<br />Coach</h1>
+        <h1 style={{ fontFamily: SERIF, fontSize: 46, fontWeight: 'bold', color: '#111', lineHeight: 1.1, margin: '0 0 14px' }}>Pocket<br />Collagen<br />Coach</h1>
         <div style={{ width: 36, height: 2, background: C, marginBottom: 16, marginTop: 14 }} />
         <p style={{ fontFamily: SANS, fontSize: 14, color: '#555', lineHeight: 1.7, margin: 0 }}>Your complete collagen food matrix in your pocket. At the restaurant, the supermarket, in your kitchen.</p>
       </div>
@@ -480,16 +507,20 @@ function App() {
     </div>
   )
 
+  // Chat screen
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: '#FDFAF9', fontFamily: SERIF }}>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap'); *, *::before, *::after { box-sizing: border-box; } body { margin: 0; padding: 0; } @keyframes blink { 0%,100%{opacity:.3;transform:translateY(0)} 50%{opacity:1;transform:translateY(-4px)} }`}</style>
 
-      <div style={{ background: '#FFF', borderBottom: '1px solid #F0E8E4', padding: '12px 18px', display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
-        <button onClick={() => setScreen('home')} style={{ background: 'none', border: 'none', fontSize: 22, cursor: 'pointer', color: C, padding: '0 4px' }}>←</button>
-        <div>
-          <div style={{ fontFamily: SCRIPT, color: C, fontSize: 18, lineHeight: 1 }}>Love Coylah</div>
-          <div style={{ fontFamily: SANS, fontSize: 14, fontWeight: '600', color: '#111', marginTop: 2 }}>{mode?.label}</div>
+      <div style={{ background: '#FFF', borderBottom: '1px solid #F0E8E4', padding: '12px 18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <button onClick={goHome} style={{ background: 'none', border: 'none', fontSize: 22, cursor: 'pointer', color: C, padding: '0 4px' }}>←</button>
+          <div>
+            <div style={{ fontFamily: SCRIPT, color: C, fontSize: 18, lineHeight: 1 }}>Love Coylah</div>
+            <div style={{ fontFamily: SANS, fontSize: 14, fontWeight: '600', color: '#111', marginTop: 2 }}>{mode?.label}</div>
+          </div>
         </div>
+        <button onClick={() => { if (mode) { setMessages([]); localStorage.removeItem('pcc_last_session') } }} style={{ background: 'none', border: '1px solid #EDDFDB', borderRadius: 50, padding: '5px 12px', fontFamily: SANS, fontSize: 11, color: '#999', cursor: 'pointer' }}>New chat</button>
       </div>
 
       <div style={{ flex: 1, overflowY: 'auto', padding: '20px 16px' }}>
