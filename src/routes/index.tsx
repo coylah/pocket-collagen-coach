@@ -53,7 +53,7 @@ TONE: Warm, direct, no-nonsense British. Knowledgeable best friend. Never preach
 
 WHEN ANALYSING PHOTOS: Identify co-factors present, what is missing, give clear practical recommendations.`
 
-const ICONS: Record<string, JSX.Element> = {
+const ICONS: Record<string, React.ReactElement> = {
   fridge: (
     <svg width="48" height="48" viewBox="0 0 28 28" fill="none" stroke="#8B1A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <rect x="6" y="3" width="16" height="22" rx="2"/>
@@ -104,7 +104,7 @@ const ICONS: Record<string, JSX.Element> = {
   ),
 }
 
-const CARD_ICONS: Record<string, JSX.Element> = {
+const CARD_ICONS: Record<string, React.ReactElement> = {
   fridge: (
     <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#8B1A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <rect x="6" y="3" width="16" height="22" rx="2"/>
