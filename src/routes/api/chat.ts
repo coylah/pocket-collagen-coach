@@ -67,7 +67,7 @@ export const Route = createFileRoute('/api/chat')({
               systemInstruction: { parts: [{ text: system }] },
               generationConfig: {
                 temperature: 0.7,
-                maxOutputTokens: 1024,
+                maxOutputTokens: 2048,
               },
             }),
           },
