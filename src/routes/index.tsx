@@ -5,9 +5,6 @@ export const Route = createFileRoute('/')({
   component: App,
 })
 
-// ─────────────────────────────────────────────
-// SYSTEM PROMPT
-// ─────────────────────────────────────────────
 const SYSTEM_PROMPT = `You are a Pocket Collagen Coach built on the complete Collagen Kitchen food matrix, created by Coylah — a British skin specialist with over 10 years experience and 4 years building this matrix.
 
 Your job: help women eat for collagen every single day. In restaurants, supermarkets, hotels, at home. Wherever they are.
@@ -54,12 +51,60 @@ KEY TRUTHS:
 
 TONE: Warm, direct, no-nonsense British. Knowledgeable best friend. Never preachy. Short punchy answers. Always name which co-factors a food hits. Real food over supplements every time.
 
-WHEN ANALYSING PHOTOS: Identify co-factors present, what's missing, give clear practical recommendations.`
+WHEN ANALYSING PHOTOS: Identify co-factors present, what is missing, give clear practical recommendations.`
 
-// ─────────────────────────────────────────────
-// SVG ICONS
-// ─────────────────────────────────────────────
 const ICONS: Record<string, JSX.Element> = {
+  fridge: (
+    <svg width="48" height="48" viewBox="0 0 28 28" fill="none" stroke="#8B1A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="6" y="3" width="16" height="22" rx="2"/>
+      <line x1="6" y1="11" x2="22" y2="11"/>
+      <line x1="11" y1="7" x2="11" y2="9"/>
+      <line x1="11" y1="15" x2="11" y2="20"/>
+    </svg>
+  ),
+  menu: (
+    <svg width="48" height="48" viewBox="0 0 28 28" fill="none" stroke="#8B1A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="5" y="3" width="18" height="22" rx="2"/>
+      <line x1="9" y1="9" x2="19" y2="9"/>
+      <line x1="9" y1="14" x2="19" y2="14"/>
+      <line x1="9" y1="19" x2="15" y2="19"/>
+    </svg>
+  ),
+  supermarket: (
+    <svg width="48" height="48" viewBox="0 0 28 28" fill="none" stroke="#8B1A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="4" y="6" width="20" height="16" rx="2"/>
+      <line x1="4" y1="11" x2="24" y2="11"/>
+      <line x1="9" y1="6" x2="9" y2="22"/>
+      <line x1="14" y1="6" x2="14" y2="22"/>
+      <line x1="19" y1="6" x2="19" y2="22"/>
+    </svg>
+  ),
+  recipe: (
+    <svg width="48" height="48" viewBox="0 0 28 28" fill="none" stroke="#8B1A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M8 20 C8 20 7 12 14 12 C21 12 20 20 20 20"/>
+      <line x1="6" y1="20" x2="22" y2="20"/>
+      <line x1="14" y1="12" x2="14" y2="8"/>
+      <path d="M11 8 C11 8 11 5 14 5 C17 5 17 8 17 8"/>
+    </svg>
+  ),
+  ask: (
+    <svg width="48" height="48" viewBox="0 0 28 28" fill="none" stroke="#8B1A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M5 4 H23 A2 2 0 0 1 25 6 V17 A2 2 0 0 1 23 19 H15 L9 24 V19 H5 A2 2 0 0 1 3 17 V6 A2 2 0 0 1 5 4 Z"/>
+      <line x1="14" y1="9" x2="14" y2="14"/>
+      <circle cx="14" cy="16.5" r="0.75" fill="#8B1A2B"/>
+    </svg>
+  ),
+  quiz: (
+    <svg width="48" height="48" viewBox="0 0 28 28" fill="none" stroke="#8B1A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="4" y="3" width="20" height="22" rx="2"/>
+      <line x1="9" y1="9" x2="19" y2="9"/>
+      <polyline points="9,14 11.5,16.5 15.5,12"/>
+      <polyline points="9,20 11.5,22.5 15.5,18"/>
+    </svg>
+  ),
+}
+
+const CARD_ICONS: Record<string, JSX.Element> = {
   fridge: (
     <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#8B1A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <rect x="6" y="3" width="16" height="22" rx="2"/>
@@ -110,9 +155,6 @@ const ICONS: Record<string, JSX.Element> = {
   ),
 }
 
-// ─────────────────────────────────────────────
-// MODES
-// ─────────────────────────────────────────────
 interface Mode {
   id: string
   badge: string
@@ -124,17 +166,14 @@ interface Mode {
 }
 
 const MODES: Mode[] = [
-  { id: 'fridge', badge: 'PHOTO', label: "What's in my fridge?", description: "Snap your fridge or cupboard and I'll build you a collagen-rich meal from whatever's in there.", photo: true, placeholder: "Or tell me what you've got...", autoPrompt: "I've taken a photo of my fridge/cupboard. What collagen-rich meals can I build? Tell me which co-factors each ingredient hits and what I'm missing." },
-  { id: 'menu', badge: 'PHOTO', label: 'Scan a menu', description: "At a restaurant or hotel buffet? Photo the menu and I'll tell you exactly what to order for maximum collagen co-factors.", photo: true, placeholder: 'Or paste the menu items...', autoPrompt: "I've taken a photo of this menu. What should I order to maximise collagen co-factors? Give me your top picks and why." },
+  { id: 'fridge', badge: 'PHOTO', label: "What's in my fridge?", description: "Snap your fridge or cupboard and I'll build you a collagen-rich meal from whatever's in there.", photo: true, placeholder: "Tell me what you've got...", autoPrompt: "I've taken a photo of my fridge or cupboard. What collagen-rich meals can I build? Tell me which co-factors each ingredient hits and what I'm missing." },
+  { id: 'menu', badge: 'PHOTO', label: 'Scan a menu', description: "At a restaurant or hotel buffet? Photo the menu and I'll tell you exactly what to order for maximum collagen co-factors.", photo: true, placeholder: 'Or paste menu items here...', autoPrompt: "I've taken a photo of this menu. What should I order to maximise collagen co-factors? Give me your top picks and why." },
   { id: 'supermarket', badge: 'PHOTO', label: 'Supermarket scan', description: "Snap a product label in the aisle and I'll tell you whether it earns a place in your collagen kitchen.", photo: true, placeholder: 'Or describe the product...', autoPrompt: "I've taken a photo of this product. Is it worth buying for collagen? What co-factors does it hit and what does it miss?" },
-  { id: 'recipe', badge: 'CHAT', label: 'Build me a recipe', description: "Tell me what you've got in your kitchen and I'll create a collagen-first recipe built around the complete matrix.", photo: false, placeholder: "e.g. I've got salmon, red pepper, spinach and some seeds...", autoPrompt: null },
+  { id: 'recipe', badge: 'CHAT', label: 'Build me a recipe', description: "Tell me what you've got and I'll create a collagen-first recipe built around the complete matrix.", photo: false, placeholder: "e.g. salmon, red pepper, spinach, seeds...", autoPrompt: null },
   { id: 'ask', badge: 'CHAT', label: 'Ask me anything', description: 'Collagen questions answered in plain English. No fluff, no industry spin — just what actually works.', photo: false, placeholder: 'e.g. Is oat milk good for collagen?', autoPrompt: null },
   { id: 'quiz', badge: 'PERSONALISE', label: 'Take the food quiz', description: "Tell me what you love, what you hate and any foods you avoid — I'll tailor every recommendation around you.", photo: false, placeholder: null, autoPrompt: null },
 ]
 
-// ─────────────────────────────────────────────
-// FOOD QUIZ DATA
-// ─────────────────────────────────────────────
 const FOOD_OPTIONS = [
   { id: 'salmon', label: 'Salmon' }, { id: 'mackerel', label: 'Mackerel' },
   { id: 'sardines', label: 'Sardines' }, { id: 'tuna', label: 'Tuna' },
@@ -169,13 +208,10 @@ const DIET_OPTIONS = [
 
 const QUIZ_STEPS = [
   { key: 'diet', title: 'Any dietary needs?', subtitle: "Select all that apply — I'll never suggest something that doesn't work for you.", options: DIET_OPTIONS },
-  { key: 'loves', title: 'Foods you love ❤️', subtitle: 'Pick everything you enjoy eating — the more you tell me, the better I can build around you.', options: FOOD_OPTIONS },
-  { key: 'dislikes', title: "Foods you'd rather avoid 🙅‍♀️", subtitle: "Pick anything you dislike or won't eat — I'll keep these out of every recommendation.", options: FOOD_OPTIONS },
+  { key: 'loves', title: 'Foods you love', subtitle: 'Pick everything you enjoy — the more you tell me, the better I can build around you.', options: FOOD_OPTIONS },
+  { key: 'dislikes', title: "Foods to avoid", subtitle: "Pick anything you dislike or won't eat — I'll keep these out of every recommendation.", options: FOOD_OPTIONS },
 ]
 
-// ─────────────────────────────────────────────
-// HELPERS
-// ─────────────────────────────────────────────
 const detectPlatform = () => {
   const ua = navigator.userAgent
   if (/iphone|ipad|ipod/i.test(ua)) return 'ios'
@@ -187,122 +223,63 @@ const isStandalone = () =>
   window.matchMedia('(display-mode: standalone)').matches ||
   (window.navigator as any).standalone === true
 
-// ─────────────────────────────────────────────
-// STYLES
-// ─────────────────────────────────────────────
 const C = '#8B1A2B'
 const SCRIPT = "'Great Vibes', cursive"
 const SERIF = "'Georgia', 'Times New Roman', serif"
 const SANS = "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
 
-const S: Record<string, React.CSSProperties> = {
-  page: { minHeight: '100vh', background: '#FFF', fontFamily: SERIF, display: 'flex', flexDirection: 'column' },
-  nav: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 24px 10px', borderBottom: '1px solid #F0E8E4' },
-  navScript: { fontFamily: SCRIPT, color: C, fontSize: 20, lineHeight: 1 } as React.CSSProperties,
-  navBrand: { fontFamily: SERIF, color: '#111', fontSize: 12, fontWeight: '600', marginTop: 3, letterSpacing: '0.02em' },
-  addBtn: { background: 'none', border: `1.5px solid ${C}`, color: C, borderRadius: 50, padding: '6px 14px', fontSize: 11, fontFamily: SANS, fontWeight: '600', cursor: 'pointer', whiteSpace: 'nowrap' } as React.CSSProperties,
-  hero: { padding: '32px 28px 20px' },
-  eyebrow: { fontSize: 10, letterSpacing: '0.18em', color: C, fontFamily: SANS, marginBottom: 10 },
-  heroScript: { fontFamily: SCRIPT, color: C, fontSize: 32, lineHeight: 1.1, marginBottom: 4 } as React.CSSProperties,
-  heroH: { fontFamily: SERIF, fontSize: 46, fontWeight: 'bold', color: '#111', lineHeight: 1.1, marginBottom: 14 },
-  heroDivider: { width: 36, height: 2, background: C, marginBottom: 16 },
-  heroP: { fontFamily: SANS, fontSize: 14, color: '#555', lineHeight: 1.7 },
-  modeList: { padding: '8px 20px 20px' },
-  modeCard: { width: '100%', background: '#FFF', border: '1px solid #EDDFDB', borderRadius: 16, padding: '18px 18px 14px', marginBottom: 14, display: 'flex', flexDirection: 'column', cursor: 'pointer', textAlign: 'left', boxShadow: '0 1px 6px rgba(139,26,43,0.05)' } as React.CSSProperties,
-  cardTop: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 },
-  cardBadge: { background: '#F9ECEE', color: C, fontSize: 10, fontFamily: SANS, fontWeight: '700', letterSpacing: '0.1em', padding: '4px 10px', borderRadius: 50 },
-  cardTitle: { fontFamily: SERIF, fontSize: 20, fontWeight: 'bold', color: '#111', lineHeight: 1.25, marginBottom: 10 },
-  cardDesc: { fontFamily: SANS, fontSize: 13, color: '#666', lineHeight: 1.6, marginBottom: 14 },
-  cardDivider: { width: '100%', height: 1, background: '#F0E8E4', marginBottom: 12 },
-  cardFooter: { display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
-  cardFooterText: { fontFamily: SANS, fontSize: 12, color: '#999' },
-  cardArrow: { color: C, fontSize: 20, fontWeight: 'bold' },
-  footer: { textAlign: 'center', fontFamily: SANS, fontSize: 11, color: '#BBB', padding: '8px 20px 32px' } as React.CSSProperties,
-  overlay: { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 100, display: 'flex', alignItems: 'flex-end' } as React.CSSProperties,
-  modal: { background: '#FFF', borderRadius: '24px 24px 0 0', padding: '32px 28px 40px', width: '100%', maxHeight: '85vh', overflowY: 'auto' } as React.CSSProperties,
-  scriptSm: { fontFamily: SCRIPT, color: C, fontSize: 22, marginBottom: 4 } as React.CSSProperties,
-  modalH: { fontFamily: SERIF, fontSize: 22, fontWeight: 'bold', color: '#111', marginBottom: 10 },
-  modalP: { fontFamily: SANS, fontSize: 14, color: '#555', lineHeight: 1.6, marginBottom: 20 },
-  platBtn: { width: '100%', background: '#FBF7F6', border: '1.5px solid #EDDFDB', borderRadius: 12, padding: '14px 18px', fontFamily: SERIF, fontSize: 15, cursor: 'pointer', textAlign: 'left', color: '#111', marginBottom: 8 } as React.CSSProperties,
-  steps: { display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 24 },
-  step: { display: 'flex', alignItems: 'flex-start', gap: 14, fontFamily: SANS, fontSize: 14, color: '#333', lineHeight: 1.5 },
-  stepN: { background: C, color: '#fff', borderRadius: '50%', width: 26, height: 26, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 'bold', flexShrink: 0 } as React.CSSProperties,
-  stepNote: { fontFamily: SANS, fontSize: 12, color: '#888', fontStyle: 'italic', marginTop: 4 },
-  dismissBtn: { width: '100%', background: C, color: '#fff', border: 'none', borderRadius: 50, padding: '16px 24px', fontFamily: SERIF, fontSize: 16, fontWeight: 'bold', cursor: 'pointer' },
-  chatPage: { height: '100vh', display: 'flex', flexDirection: 'column', background: '#FDFAF9', fontFamily: SERIF },
-  chatNav: { background: '#FFF', borderBottom: '1px solid #F0E8E4', padding: '12px 18px', display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 },
-  backBtn: { background: 'none', border: 'none', fontSize: 22, cursor: 'pointer', color: C, padding: '0 4px' },
-  chatNavTitle: { fontFamily: SANS, fontSize: 14, fontWeight: '600', color: '#111', marginTop: 2 },
-  msgArea: { flex: 1, overflowY: 'auto', padding: '20px 16px' } as React.CSSProperties,
-  empty: { textAlign: 'center', padding: '60px 24px 40px' } as React.CSSProperties,
-  emptyIcon: { display: 'flex', justifyContent: 'center', marginBottom: 20 },
-  emptyT: { fontFamily: SERIF, fontSize: 20, fontWeight: 'bold', color: '#111', marginBottom: 10 },
-  emptyS: { fontFamily: SANS, fontSize: 14, color: '#888', lineHeight: 1.6 },
-  bUser: { background: C, color: '#FFF', borderRadius: '18px 18px 4px 18px', padding: '12px 16px', fontSize: 14, fontFamily: SANS, lineHeight: 1.6, whiteSpace: 'pre-wrap', maxWidth: '82%' } as React.CSSProperties,
-  bBot: { background: '#FFF', color: '#111', border: '1px solid #EDE0DC', borderRadius: '18px 18px 18px 4px', padding: '12px 16px', fontSize: 14, fontFamily: SANS, lineHeight: 1.7, whiteSpace: 'pre-wrap', maxWidth: '82%', boxShadow: '0 1px 4px rgba(139,26,43,0.05)' } as React.CSSProperties,
-  imgMsg: { maxWidth: 200, borderRadius: 12, border: '1px solid #EDE0DC', marginBottom: 6 },
-  inputArea: { background: '#FFF', borderTop: '1px solid #EDE0DC', padding: '12px 14px', flexShrink: 0 },
-  inputRow: { display: 'flex', alignItems: 'flex-end', gap: 8 },
-  iconBtn: { background: '#FBF7F6', border: '1.5px solid #EDE0DC', borderRadius: 12, padding: '9px 11px', fontSize: 18, cursor: 'pointer', flexShrink: 0, lineHeight: 1 } as React.CSSProperties,
-  textarea: { flex: 1, border: '1.5px solid #EDE0DC', borderRadius: 14, padding: '10px 14px', fontSize: 14, fontFamily: SANS, resize: 'none', outline: 'none', background: '#FDFAF9', color: '#111', minHeight: 42, maxHeight: 110, lineHeight: 1.5 } as React.CSSProperties,
-  removeImg: { position: 'absolute', top: -7, right: -7, background: C, border: 'none', borderRadius: '50%', width: 22, height: 22, color: '#fff', fontSize: 11, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' } as React.CSSProperties,
-}
-
-// ─────────────────────────────────────────────
-// INSTALL MODAL
-// ─────────────────────────────────────────────
 function InstallModal({ onDismiss }: { onDismiss: () => void }) {
   const [platform, setPlatform] = useState<string | null>(null)
   useEffect(() => { setPlatform(detectPlatform()) }, [])
 
+  const stepStyle: React.CSSProperties = { display: 'flex', alignItems: 'flex-start', gap: 14, fontFamily: SANS, fontSize: 14, color: '#333', lineHeight: 1.5 }
+  const numStyle: React.CSSProperties = { background: C, color: '#fff', borderRadius: '50%', width: 26, height: 26, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 'bold', flexShrink: 0 }
+
   return (
-    <div style={S.overlay}>
-      <div style={S.modal}>
-        <div style={S.scriptSm}>Love Coylah</div>
-        <h2 style={S.modalH}>Add to your home screen</h2>
-        <p style={S.modalP}>Get the full app experience — one tap from your home screen, no browser bar needed.</p>
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 100, display: 'flex', alignItems: 'flex-end' }}>
+      <div style={{ background: '#FFF', borderRadius: '24px 24px 0 0', padding: '32px 28px 48px', width: '100%', maxHeight: '85vh', overflowY: 'auto' }}>
+        <div style={{ fontFamily: SCRIPT, color: C, fontSize: 22, marginBottom: 4 }}>Love Coylah</div>
+        <h2 style={{ fontFamily: SERIF, fontSize: 22, fontWeight: 'bold', color: '#111', marginBottom: 10 }}>Add to your home screen</h2>
+        <p style={{ fontFamily: SANS, fontSize: 14, color: '#555', lineHeight: 1.6, marginBottom: 20 }}>Get the full app experience — one tap from your home screen, no browser bar needed.</p>
 
         {platform === null && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 20 }}>
-            <button style={S.platBtn} onClick={() => setPlatform('ios')}>📱 I'm on iPhone / iPad</button>
-            <button style={S.platBtn} onClick={() => setPlatform('android')}>🤖 I'm on Android</button>
-            <button style={S.platBtn} onClick={() => setPlatform('other')}>💻 I'm on desktop / other</button>
+            {['📱 I\'m on iPhone / iPad', '🤖 I\'m on Android', '💻 I\'m on desktop'].map((label, i) => (
+              <button key={i} onClick={() => setPlatform(['ios', 'android', 'other'][i])} style={{ background: '#FBF7F6', border: '1.5px solid #EDDFDB', borderRadius: 12, padding: '14px 18px', fontFamily: SERIF, fontSize: 15, cursor: 'pointer', textAlign: 'left', color: '#111' }}>{label}</button>
+            ))}
           </div>
         )}
 
         {platform === 'ios' && (
-          <div style={S.steps}>
-            <div style={S.step}><span style={S.stepN}>1</span><span>Tap the <strong>Share button ⎋</strong> at the bottom of Safari</span></div>
-            <div style={S.step}><span style={S.stepN}>2</span><span>Scroll down and tap <strong>"Add to Home Screen"</strong></span></div>
-            <div style={S.step}><span style={S.stepN}>3</span><span>Tap <strong>Add</strong> in the top right corner</span></div>
-            <p style={S.stepNote}>The Pocket Collagen Coach icon will appear on your home screen.</p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 24 }}>
+            <div style={stepStyle}><span style={numStyle}>1</span><span>Tap the <strong>Share button ⎋</strong> at the bottom of Safari</span></div>
+            <div style={stepStyle}><span style={numStyle}>2</span><span>Tap <strong>"Add to Home Screen"</strong></span></div>
+            <div style={stepStyle}><span style={numStyle}>3</span><span>Tap <strong>Add</strong> to confirm</span></div>
           </div>
         )}
 
         {platform === 'android' && (
-          <div style={S.steps}>
-            <div style={S.step}><span style={S.stepN}>1</span><span>Tap the <strong>menu icon ⋮</strong> in the top right of Chrome</span></div>
-            <div style={S.step}><span style={S.stepN}>2</span><span>Tap <strong>"Add to Home screen"</strong></span></div>
-            <div style={S.step}><span style={S.stepN}>3</span><span>Change the name to <strong>Collagen Coach</strong> then tap Add</span></div>
-            <p style={S.stepNote}>The Pocket Collagen Coach icon will appear on your home screen.</p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 24 }}>
+            <div style={stepStyle}><span style={numStyle}>1</span><span>Tap the <strong>menu icon ⋮</strong> in Chrome</span></div>
+            <div style={stepStyle}><span style={numStyle}>2</span><span>Tap <strong>"Add to Home screen"</strong></span></div>
+            <div style={stepStyle}><span style={numStyle}>3</span><span>Rename to <strong>Collagen Coach</strong> then tap Add</span></div>
           </div>
         )}
 
         {platform === 'other' && (
-          <div style={S.steps}>
-            <div style={S.step}><span style={S.stepN}>✓</span><span>Bookmark this page, or open it on your phone to add it to your home screen.</span></div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 24 }}>
+            <div style={stepStyle}><span style={numStyle}>✓</span><span>Bookmark this page, or open on your phone to add to home screen.</span></div>
           </div>
         )}
 
-        <button style={S.dismissBtn} onClick={onDismiss}>{platform ? "Got it — let's go ✦" : 'Maybe later'}</button>
+        <button onClick={onDismiss} style={{ width: '100%', background: C, color: '#fff', border: 'none', borderRadius: 50, padding: '16px 24px', fontFamily: SERIF, fontSize: 16, fontWeight: 'bold', cursor: 'pointer' }}>
+          {platform ? "Got it — let's go ✦" : 'Maybe later'}
+        </button>
       </div>
     </div>
   )
 }
 
-// ─────────────────────────────────────────────
-// QUIZ SCREEN
-// ─────────────────────────────────────────────
 function QuizScreen({ onDone, onBack }: { onDone: (prefs: any) => void; onBack: () => void }) {
   const [step, setStep] = useState(0)
   const [answers, setAnswers] = useState<Record<string, string[]>>({ diet: [], loves: [], dislikes: [] })
@@ -314,8 +291,6 @@ function QuizScreen({ onDone, onBack }: { onDone: (prefs: any) => void; onBack: 
       return { ...prev, [current.key]: arr.includes(id) ? arr.filter(x => x !== id) : [...arr, id] }
     })
   }
-
-  const isSelected = (id: string) => answers[current.key].includes(id)
 
   const next = () => {
     if (step < QUIZ_STEPS.length - 1) { setStep(step + 1) }
@@ -333,7 +308,7 @@ function QuizScreen({ onDone, onBack }: { onDone: (prefs: any) => void; onBack: 
 
   return (
     <div style={{ minHeight: '100vh', background: '#FFF', fontFamily: SERIF, display: 'flex', flexDirection: 'column' }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');`}</style>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap'); *, *::before, *::after { box-sizing: border-box; } body { margin: 0; padding: 0; }`}</style>
       <div style={{ background: '#FFF', borderBottom: '1px solid #F0E8E4', padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 12 }}>
         <button onClick={onBack} style={{ background: 'none', border: 'none', fontSize: 22, cursor: 'pointer', color: C, padding: '0 4px' }}>←</button>
         <div>
@@ -350,16 +325,16 @@ function QuizScreen({ onDone, onBack }: { onDone: (prefs: any) => void; onBack: 
         <p style={{ fontFamily: SANS, fontSize: 13, color: '#888', lineHeight: 1.6, marginBottom: 24 }}>{current.subtitle}</p>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
           {current.options.map(opt => {
-            const sel = isSelected(opt.id)
+            const sel = answers[current.key].includes(opt.id)
             return (
-              <button key={opt.id} onClick={() => toggle(opt.id)} style={{ padding: '9px 16px', borderRadius: 50, border: `1.5px solid ${sel ? C : '#EDDFDB'}`, background: sel ? C : '#FFF', color: sel ? '#FFF' : '#333', fontFamily: SANS, fontSize: 13, cursor: 'pointer', transition: 'all 0.15s' }}>
+              <button key={opt.id} onClick={() => toggle(opt.id)} style={{ padding: '9px 16px', borderRadius: 50, border: `1.5px solid ${sel ? C : '#EDDFDB'}`, background: sel ? C : '#FFF', color: sel ? '#FFF' : '#333', fontFamily: SANS, fontSize: 13, cursor: 'pointer' }}>
                 {sel ? '✓ ' : ''}{opt.label}
               </button>
             )
           })}
         </div>
       </div>
-      <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#FFF', borderTop: '1px solid #F0E8E4', padding: '16px 20px 28px' }}>
+      <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#FFF', borderTop: '1px solid #F0E8E4', padding: '16px 20px 36px' }}>
         <button onClick={next} style={{ width: '100%', background: C, color: '#FFF', border: 'none', borderRadius: 50, padding: '16px 24px', fontFamily: SERIF, fontSize: 16, fontWeight: 'bold', cursor: 'pointer' }}>
           {step < QUIZ_STEPS.length - 1 ? 'Next →' : 'Save my preferences ✦'}
         </button>
@@ -371,9 +346,6 @@ function QuizScreen({ onDone, onBack }: { onDone: (prefs: any) => void; onBack: 
   )
 }
 
-// ─────────────────────────────────────────────
-// MAIN APP
-// ─────────────────────────────────────────────
 function App() {
   const [screen, setScreen] = useState('home')
   const [mode, setMode] = useState<Mode | null>(null)
@@ -415,11 +387,10 @@ function App() {
   const buildSystemPrompt = () => {
     let prompt = SYSTEM_PROMPT
     if (userPrefs?.completed) {
-      prompt += '\n\nUSER FOOD PREFERENCES (personalise every response around these):'
-      if (userPrefs.diet?.length) prompt += `\nDietary requirements: ${userPrefs.diet.join(', ')}. Never suggest anything that conflicts with these.`
-      if (userPrefs.loves?.length) prompt += `\nFoods this person loves: ${userPrefs.loves.join(', ')}. Prioritise these wherever possible.`
-      if (userPrefs.dislikes?.length) prompt += `\nFoods this person dislikes or avoids: ${userPrefs.dislikes.join(', ')}. Never include these in recipes or recommendations.`
-      prompt += '\nAlways build suggestions around their preferences. If a hero food is on their dislike list, find the next best alternative.'
+      prompt += '\n\nUSER FOOD PREFERENCES — personalise every response around these:'
+      if (userPrefs.diet?.length) prompt += `\nDietary requirements: ${userPrefs.diet.join(', ')}. Never suggest anything conflicting.`
+      if (userPrefs.loves?.length) prompt += `\nFoods this person loves: ${userPrefs.loves.join(', ')}. Prioritise these.`
+      if (userPrefs.dislikes?.length) prompt += `\nFoods to avoid: ${userPrefs.dislikes.join(', ')}. Never include these.`
     }
     return prompt
   }
@@ -465,76 +436,90 @@ function App() {
   )
 
   if (screen === 'home') return (
-    <div style={S.page}>
+    <div style={{ minHeight: '100vh', background: '#FFF', fontFamily: SERIF, display: 'flex', flexDirection: 'column' }}>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap'); *, *::before, *::after { box-sizing: border-box; } body { margin: 0; padding: 0; }`}</style>
       {showInstall && <InstallModal onDismiss={dismissInstall} />}
-      <nav style={S.nav}>
+
+      <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 24px 10px', borderBottom: '1px solid #F0E8E4' }}>
         <div>
-          <div style={S.navScript}>Love Coylah</div>
-          <div style={S.navBrand}>Pocket Collagen Coach</div>
+          <div style={{ fontFamily: SCRIPT, color: C, fontSize: 20, lineHeight: 1 }}>Love Coylah</div>
+          <div style={{ fontFamily: SERIF, color: '#111', fontSize: 12, fontWeight: '600', marginTop: 3 }}>Pocket Collagen Coach</div>
         </div>
-        <button style={S.addBtn} onClick={() => setShowInstall(true)}>+ Add to home</button>
+        <button onClick={() => setShowInstall(true)} style={{ background: 'none', border: `1.5px solid ${C}`, color: C, borderRadius: 50, padding: '6px 14px', fontSize: 11, fontFamily: SANS, fontWeight: '600', cursor: 'pointer', whiteSpace: 'nowrap' }}>+ Add to home</button>
       </nav>
-      <div style={S.hero}>
-        <div style={S.eyebrow}>— YOUR SKIN-FOOD COACH —</div>
-        <div style={S.heroScript}>Love Coylah</div>
-        <h1 style={S.heroH}>Pocket<br />Collagen<br />Coach</h1>
-        <div style={S.heroDivider} />
-        <p style={S.heroP}>Your complete collagen food matrix in your pocket. At the restaurant, the supermarket, in your kitchen.</p>
+
+      <div style={{ padding: '32px 28px 20px' }}>
+        <div style={{ fontSize: 10, letterSpacing: '0.18em', color: C, fontFamily: SANS, marginBottom: 10 }}>— YOUR SKIN-FOOD COACH —</div>
+        <div style={{ fontFamily: SCRIPT, color: C, fontSize: 32, lineHeight: 1.1, marginBottom: 4 }}>Love Coylah</div>
+        <h1 style={{ fontFamily: SERIF, fontSize: 46, fontWeight: 'bold', color: '#111', lineHeight: 1.1, marginBottom: 14, margin: '0 0 14px' }}>Pocket<br />Collagen<br />Coach</h1>
+        <div style={{ width: 36, height: 2, background: C, marginBottom: 16, marginTop: 14 }} />
+        <p style={{ fontFamily: SANS, fontSize: 14, color: '#555', lineHeight: 1.7, margin: 0 }}>Your complete collagen food matrix in your pocket. At the restaurant, the supermarket, in your kitchen.</p>
       </div>
-      <div style={S.modeList}>
+
+      <div style={{ padding: '8px 20px 40px' }}>
         {MODES.map(m => (
-          <button key={m.id} onClick={() => selectMode(m)} style={S.modeCard}>
-            <div style={S.cardTop}>
-              <span style={S.cardBadge}>{m.badge}</span>
-              <span>{ICONS[m.id]}</span>
+          <button key={m.id} onClick={() => selectMode(m)} style={{ width: '100%', background: '#FFF', border: '1px solid #EDDFDB', borderRadius: 16, padding: '18px 18px 14px', marginBottom: 14, display: 'flex', flexDirection: 'column', cursor: 'pointer', textAlign: 'left', boxShadow: '0 1px 6px rgba(139,26,43,0.05)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+              <span style={{ background: '#F9ECEE', color: C, fontSize: 10, fontFamily: SANS, fontWeight: '700', letterSpacing: '0.1em', padding: '4px 10px', borderRadius: 50 }}>{m.badge}</span>
+              <span>{CARD_ICONS[m.id]}</span>
             </div>
-            <div style={S.cardTitle}>{m.label}</div>
-            <div style={S.cardDesc}>{m.description}</div>
-            <div style={S.cardDivider} />
-            <div style={S.cardFooter}>
-              <span style={S.cardFooterText}>
+            <div style={{ fontFamily: SERIF, fontSize: 20, fontWeight: 'bold', color: '#111', lineHeight: 1.25, marginBottom: 10 }}>{m.label}</div>
+            <div style={{ fontFamily: SANS, fontSize: 13, color: '#666', lineHeight: 1.6, marginBottom: 14 }}>{m.description}</div>
+            <div style={{ width: '100%', height: 1, background: '#F0E8E4', marginBottom: 12 }} />
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontFamily: SANS, fontSize: 12, color: '#999' }}>
                 {m.id === 'quiz' && userPrefs?.completed ? '✓ Preferences saved — tap to update' : m.photo ? '📷 Photo or text' : m.id === 'quiz' ? 'Takes 2 minutes' : '💬 Chat'}
               </span>
-              <span style={S.cardArrow}>›</span>
+              <span style={{ color: C, fontSize: 20, fontWeight: 'bold' }}>›</span>
             </div>
           </button>
         ))}
       </div>
-      <p style={S.footer}>Built on the complete Collagen Kitchen matrix by Coylah</p>
+
+      <p style={{ textAlign: 'center', fontFamily: SANS, fontSize: 11, color: '#BBB', padding: '8px 20px 32px' }}>Built on the complete Collagen Kitchen matrix by Coylah</p>
     </div>
   )
 
-  // Chat screen
   return (
-    <div style={S.chatPage}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap'); *, *::before, *::after { box-sizing: border-box; } body { margin: 0; } @keyframes blink { 0%,100%{opacity:.3;transform:translateY(0)} 50%{opacity:1;transform:translateY(-4px)} }`}</style>
-      <div style={S.chatNav}>
-        <button onClick={() => setScreen('home')} style={S.backBtn}>←</button>
+    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: '#FDFAF9', fontFamily: SERIF }}>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap'); *, *::before, *::after { box-sizing: border-box; } body { margin: 0; padding: 0; } @keyframes blink { 0%,100%{opacity:.3;transform:translateY(0)} 50%{opacity:1;transform:translateY(-4px)} }`}</style>
+
+      <div style={{ background: '#FFF', borderBottom: '1px solid #F0E8E4', padding: '12px 18px', display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
+        <button onClick={() => setScreen('home')} style={{ background: 'none', border: 'none', fontSize: 22, cursor: 'pointer', color: C, padding: '0 4px' }}>←</button>
         <div>
-          <div style={S.navScript}>Love Coylah</div>
-          <div style={S.chatNavTitle}>{mode?.label}</div>
+          <div style={{ fontFamily: SCRIPT, color: C, fontSize: 18, lineHeight: 1 }}>Love Coylah</div>
+          <div style={{ fontFamily: SANS, fontSize: 14, fontWeight: '600', color: '#111', marginTop: 2 }}>{mode?.label}</div>
         </div>
       </div>
-      <div style={S.msgArea}>
+
+      <div style={{ flex: 1, overflowY: 'auto', padding: '20px 16px' }}>
         {messages.length === 0 && (
-          <div style={S.empty}>
-            <div style={S.emptyIcon}>{mode && ICONS[mode.id] && <span style={{ transform: 'scale(2.2)', display: 'block' }}>{ICONS[mode.id]}</span>}</div>
-            <p style={S.emptyT}>{mode?.label}</p>
-            <p style={S.emptyS}>{mode?.photo ? "Take a photo or describe what you're looking at below." : 'Type your question below.'}</p>
+          <div style={{ textAlign: 'center', padding: '60px 24px 40px' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
+              {mode && ICONS[mode.id]}
+            </div>
+            <p style={{ fontFamily: SERIF, fontSize: 20, fontWeight: 'bold', color: '#111', marginBottom: 10 }}>{mode?.label}</p>
+            <p style={{ fontFamily: SANS, fontSize: 14, color: '#888', lineHeight: 1.6, margin: 0 }}>
+              {mode?.photo ? "Take a photo or describe what you're looking at below." : 'Type your question below.'}
+            </p>
           </div>
         )}
         {messages.map((m, i) => (
           <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: m.role === 'user' ? 'flex-end' : 'flex-start', marginBottom: 14 }}>
-            {m.imagePreview && <img src={m.imagePreview} alt="upload" style={S.imgMsg} />}
+            {m.imagePreview && <img src={m.imagePreview} alt="upload" style={{ maxWidth: 200, borderRadius: 12, border: '1px solid #EDE0DC', marginBottom: 6 }} />}
             {(m.displayText || m.role === 'assistant') && (
-              <div style={m.role === 'user' ? S.bUser : S.bBot}>{m.role === 'user' ? m.displayText : m.content}</div>
+              <div style={m.role === 'user'
+                ? { background: C, color: '#FFF', borderRadius: '18px 18px 4px 18px', padding: '12px 16px', fontSize: 14, fontFamily: SANS, lineHeight: 1.6, whiteSpace: 'pre-wrap', maxWidth: '82%' }
+                : { background: '#FFF', color: '#111', border: '1px solid #EDE0DC', borderRadius: '18px 18px 18px 4px', padding: '12px 16px', fontSize: 14, fontFamily: SANS, lineHeight: 1.7, whiteSpace: 'pre-wrap', maxWidth: '82%', boxShadow: '0 1px 4px rgba(139,26,43,0.05)' }
+              }>
+                {m.role === 'user' ? m.displayText : m.content}
+              </div>
             )}
           </div>
         ))}
         {loading && (
           <div style={{ display: 'flex', marginBottom: 14 }}>
-            <div style={S.bBot}>
+            <div style={{ background: '#FFF', border: '1px solid #EDE0DC', borderRadius: '18px 18px 18px 4px', padding: '12px 16px' }}>
               <span style={{ display: 'inline-block', width: 7, height: 7, borderRadius: '50%', background: C, marginRight: 4, animation: 'blink 1s 0s infinite' }} />
               <span style={{ display: 'inline-block', width: 7, height: 7, borderRadius: '50%', background: C, marginRight: 4, animation: 'blink 1s 0.2s infinite' }} />
               <span style={{ display: 'inline-block', width: 7, height: 7, borderRadius: '50%', background: C, animation: 'blink 1s 0.4s infinite' }} />
@@ -543,24 +528,36 @@ function App() {
         )}
         <div ref={bottomRef} />
       </div>
-      <div style={S.inputArea}>
+
+      <div style={{ background: '#FFF', borderTop: '1px solid #EDE0DC', padding: '12px 14px 36px', flexShrink: 0 }}>
         {pendingImage && (
           <div style={{ position: 'relative', display: 'inline-block', marginBottom: 10 }}>
             <img src={pendingImage} alt="preview" style={{ height: 64, borderRadius: 8, border: '1px solid #EDE0DC', display: 'block' }} />
-            <button onClick={() => { setPendingImage(null); setPendingB64(null) }} style={S.removeImg}>✕</button>
+            <button onClick={() => { setPendingImage(null); setPendingB64(null) }} style={{ position: 'absolute', top: -7, right: -7, background: C, border: 'none', borderRadius: '50%', width: 22, height: 22, color: '#fff', fontSize: 11, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
           </div>
         )}
-        <div style={S.inputRow}>
+        <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8 }}>
           {mode?.photo && (
             <>
               <input ref={cameraRef} type="file" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={e => handleFile(e.target.files?.[0])} />
               <input ref={galleryRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={e => handleFile(e.target.files?.[0])} />
-              <button onClick={() => cameraRef.current?.click()} style={S.iconBtn}>📷</button>
-              <button onClick={() => galleryRef.current?.click()} style={S.iconBtn}>🖼️</button>
+              <button onClick={() => cameraRef.current?.click()} style={{ background: '#FBF7F6', border: '1.5px solid #EDE0DC', borderRadius: 12, padding: '9px 11px', fontSize: 18, cursor: 'pointer', flexShrink: 0, lineHeight: 1 }}>📷</button>
+              <button onClick={() => galleryRef.current?.click()} style={{ background: '#FBF7F6', border: '1.5px solid #EDE0DC', borderRadius: 12, padding: '9px 11px', fontSize: 18, cursor: 'pointer', flexShrink: 0, lineHeight: 1 }}>🖼️</button>
             </>
           )}
-          <textarea value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }} placeholder={mode?.placeholder ?? ''} rows={1} style={S.textarea} />
-          <button onClick={send} disabled={loading || (!input.trim() && !pendingB64)} style={{ border: 'none', borderRadius: 12, padding: '10px 16px', color: '#FFF', fontSize: 18, cursor: 'pointer', flexShrink: 0, minHeight: 42, background: loading || (!input.trim() && !pendingB64) ? '#D9C9C6' : C }}>→</button>
+          <textarea
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
+            placeholder={mode?.placeholder ?? ''}
+            rows={1}
+            style={{ flex: 1, border: '1.5px solid #EDE0DC', borderRadius: 14, padding: '10px 14px', fontSize: 14, fontFamily: SANS, resize: 'none', outline: 'none', background: '#FDFAF9', color: '#111', minHeight: 42, maxHeight: 110, lineHeight: 1.5 }}
+          />
+          <button
+            onClick={send}
+            disabled={loading || (!input.trim() && !pendingB64)}
+            style={{ border: 'none', borderRadius: 12, padding: '10px 16px', color: '#FFF', fontSize: 18, cursor: 'pointer', flexShrink: 0, minHeight: 42, background: loading || (!input.trim() && !pendingB64) ? '#D9C9C6' : C }}
+          >→</button>
         </div>
       </div>
     </div>
