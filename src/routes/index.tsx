@@ -312,12 +312,8 @@ function PocketCollagenCoach() {
   const galleryRef = useRef<HTMLInputElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (!isStandalone()) {
-      const dismissed = localStorage.getItem("pcc_install_dismissed");
-      if (!dismissed) setTimeout(() => setShowInstall(true), 1200);
-    }
-  }, []);
+  // Install prompt is opt-in via the "+ Add to home" button — never auto-shown,
+  // so the home screen renders immediately with no async dependency.
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -510,7 +506,7 @@ const SERIF = "'Georgia', 'Times New Roman', serif";
 const SANS = "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
 
 const S: Record<string, React.CSSProperties> = {
-  page: { minHeight:"100vh", fontFamily:SERIF, display:"flex", flexDirection:"column" },
+  page: { minHeight:"100vh", background:"#FFF", color:"#111", fontFamily:SERIF, display:"flex", flexDirection:"column" },
   nav: { display:"flex", alignItems:"center", justifyContent:"space-between", padding:"16px 24px 10px", borderBottom:"1px solid #F0E8E4" },
   navScript: { fontFamily:SCRIPT, color:CRIMSON, fontSize:20, lineHeight:1 },
   navBrand: { fontFamily:SERIF, color:"#111", fontSize:12, fontWeight:"600", marginTop:3, letterSpacing:"0.02em" },
