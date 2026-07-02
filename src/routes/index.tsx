@@ -350,18 +350,8 @@ function App() {
   const galleryRef = useRef<HTMLInputElement>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
 
-  // Restore last session on mount
+  // Show install prompt on first visit
   useEffect(() => {
-    const last = loadLastSession()
-    if (last.modeId && last.messages.length > 0) {
-      const lastMode = MODES.find(m => m.id === last.modeId)
-      if (lastMode) {
-        setMode(lastMode)
-        setMessages(last.messages)
-        setScreen('chat')
-        return
-      }
-    }
     if (!isStandalone()) {
       const dismissed = localStorage.getItem('pcc_install_dismissed')
       if (!dismissed) setTimeout(() => setShowInstall(true), 1200)
@@ -372,10 +362,9 @@ function App() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, loading])
 
-  // Save session whenever messages change
+  // Save to history whenever messages change
   useEffect(() => {
     if (mode && messages.length > 0) {
-      saveLastSession(mode.id, messages)
       saveConversation(mode.id, mode.label, messages)
     }
   }, [messages, mode])
@@ -388,7 +377,6 @@ function App() {
   const selectMode = (m: Mode) => {
     if (m.id === 'quiz') { setScreen('quiz'); return }
     setMode(m); setMessages([]); setPendingImage(null); setPendingB64(null); setInput(''); setScreen('chat')
-    localStorage.removeItem('pcc_last_session')
   }
 
   const goHome = () => {
@@ -520,7 +508,7 @@ function App() {
             <div style={{ fontFamily: SANS, fontSize: 14, fontWeight: '600', color: '#111', marginTop: 2 }}>{mode?.label}</div>
           </div>
         </div>
-        <button onClick={() => { if (mode) { setMessages([]); localStorage.removeItem('pcc_last_session') } }} style={{ background: 'none', border: '1px solid #EDDFDB', borderRadius: 50, padding: '5px 12px', fontFamily: SANS, fontSize: 11, color: '#999', cursor: 'pointer' }}>New chat</button>
+        <button onClick={() => { setMessages([]) }} style={{ background: 'none', border: '1px solid #EDDFDB', borderRadius: 50, padding: '5px 12px', fontFamily: SANS, fontSize: 11, color: '#999', cursor: 'pointer' }}>New chat</button>
       </div>
 
       <div style={{ flex: 1, overflowY: 'auto', padding: '20px 16px' }}>
