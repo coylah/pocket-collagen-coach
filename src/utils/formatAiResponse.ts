@@ -17,9 +17,6 @@ export function formatAiResponse(text: string): string {
   if (!text) return "";
 
   let cleaned = text
-    // Hide the raw score line because index.tsx displays it as a score circle
-    .replace(/^\s*collagen score\s*:\s*\d{1,3}\s*\/\s*100\s*$/gim, "")
-
     // Remove markdown heading markers like #, ##, ###
     .replace(/^\s{0,3}#{1,6}\s+/gm, "")
 
@@ -40,6 +37,9 @@ export function formatAiResponse(text: string): string {
 
     // Remove markdown bullet characters from the start of lines
     .replace(/^\s*[-•]\s+/gm, "")
+
+    // Make score lines cleaner but keep them attached to each dish
+    .replace(/^\s*collagen score\s*:\s*(\d{1,3})\s*\/\s*100\s*$/gim, "Collagen Score: $1/100")
 
     // Clean awkward spacing after numbered list items
     .replace(/^(\d+)\.\s{2,}/gm, "$1. ")
