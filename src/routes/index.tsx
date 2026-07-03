@@ -378,6 +378,7 @@ function QuizScreen({ onDone, onBack }: { onDone: (prefs: any) => void; onBack: 
 }
 
 
+
 function CollagenScoreBadge({ score }: { score: number }) {
   const safeScore = Math.max(0, Math.min(100, Math.round(score)))
   const radius = 28
@@ -385,7 +386,7 @@ function CollagenScoreBadge({ score }: { score: number }) {
   const offset = circumference - (safeScore / 100) * circumference
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '10px 0 14px' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
       <div style={{ position: 'relative', width: 72, height: 72, flexShrink: 0 }}>
         <svg width="72" height="72" viewBox="0 0 72 72">
           <circle cx="36" cy="36" r={radius} fill="none" stroke="#F0E8E4" strokeWidth="8" />
@@ -415,22 +416,87 @@ function CollagenScoreBadge({ score }: { score: number }) {
   )
 }
 
-function AssistantMessage({ content }: { content: string }) {
+function parseAssistantResponse(content: string) {
   const formatted = formatAiResponse(content)
-  const parts = formatted.split(/(Collagen Score:\s*\d{1,3}\/100)/gi)
+  const lines = formatted.split('\n').map(line => line.trim()).filter(Boolean)
+  const intro: string[] = []
+  const cards: Array<{ title: string; score: number; body: string[] }> = []
+  let current: { title: string; score: number; body: string[] } | null = null
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i]
+    const scoreMatch = line.match(/^Collagen Score:\s*(\d{1,3})\/100$/i)
+    const numberedTitleMatch = line.match(/^(\d+)\.\s*(.+)$/)
+
+    if (numberedTitleMatch && lines[i + 1]?.match(/^Collagen Score:\s*\d{1,3}\/100$/i)) {
+      if (current) cards.push(current)
+      const nextScore = lines[i + 1].match(/^Collagen Score:\s*(\d{1,3})\/100$/i)
+      current = { title: numberedTitleMatch[2], score: Number(nextScore?.[1] || 0), body: [] }
+      i++
+      continue
+    }
+
+    if (scoreMatch && current) {
+      current.score = Number(scoreMatch[1])
+      continue
+    }
+
+    if (current) current.body.push(line)
+    else intro.push(line)
+  }
+
+  if (current) cards.push(current)
+
+  return { intro: intro.join('\n\n'), cards }
+}
+
+function RecommendationCard({ title, score, body }: { title: string; score: number; body: string[] }) {
+  const bodyText = body.join('\n\n')
+    .replace(/^Why it’s good:/gim, 'Why it’s good')
+    .replace(/^Why it's good:/gim, "Why it's good")
+    .replace(/^How to maximise it:/gim, 'How to maximise it')
+    .replace(/^How to maximise:/gim, 'How to maximise it')
+    .replace(/^Hits:/gim, 'Hits')
+    .replace(/^Missing:/gim, 'Missing')
+
+  return (
+    <div style={{
+      background: '#FFF',
+      border: '1px solid #EDDFDB',
+      borderRadius: 18,
+      padding: '16px 16px 18px',
+      margin: '16px 0',
+      boxShadow: '0 4px 14px rgba(139,26,43,0.06)'
+    }}>
+      <div style={{ fontFamily: SERIF, fontSize: 21, fontWeight: 'bold', color: '#111', lineHeight: 1.25, marginBottom: 12 }}>
+        {title}
+      </div>
+      <CollagenScoreBadge score={score} />
+      <div style={{ height: 1, background: '#F0E8E4', margin: '12px 0 14px' }} />
+      <div style={{ fontFamily: SANS, fontSize: 14, lineHeight: 1.7, color: '#222', whiteSpace: 'pre-wrap' }}>
+        {bodyText}
+      </div>
+    </div>
+  )
+}
+
+function AssistantMessage({ content }: { content: string }) {
+  const { intro, cards } = parseAssistantResponse(content)
+
+  if (!cards.length) {
+    return <span>{formatAiResponse(content)}</span>
+  }
 
   return (
     <>
-      {parts.map((part, index) => {
-        const match = part.match(/Collagen Score:\s*(\d{1,3})\/100/i)
-        if (match) {
-          return <CollagenScoreBadge key={index} score={Number(match[1])} />
-        }
-
-        if (!part.trim()) return null
-
-        return <span key={index}>{part}</span>
-      })}
+      {intro && (
+        <div style={{ fontFamily: SANS, fontSize: 14, lineHeight: 1.7, color: '#222', whiteSpace: 'pre-wrap', marginBottom: 8 }}>
+          {intro}
+        </div>
+      )}
+      {cards.map((card, index) => (
+        <RecommendationCard key={index} title={card.title} score={card.score} body={card.body} />
+      ))}
     </>
   )
 }
@@ -599,7 +665,7 @@ function App() {
             {(m.displayText || m.role === 'assistant') && (
               <div style={m.role === 'user'
                 ? { background: C, color: '#FFF', borderRadius: '18px 18px 4px 18px', padding: '12px 16px', fontSize: 14, fontFamily: SANS, lineHeight: 1.6, whiteSpace: 'pre-wrap', maxWidth: '82%' }
-                : { background: '#FFF', color: '#111', border: '1px solid #EDE0DC', borderRadius: '18px 18px 18px 4px', padding: '12px 16px', fontSize: 14, fontFamily: SANS, lineHeight: 1.7, whiteSpace: 'pre-wrap', maxWidth: '82%', boxShadow: '0 1px 4px rgba(139,26,43,0.05)' }
+                : { background: '#FFF', color: '#111', border: '1px solid #EDE0DC', borderRadius: '18px 18px 18px 4px', padding: '12px 16px', fontSize: 14, fontFamily: SANS, lineHeight: 1.7, whiteSpace: 'pre-wrap', maxWidth: '94%', width: '100%', boxShadow: '0 1px 4px rgba(139,26,43,0.05)' }
               }>
                 {m.role === 'user' ? m.displayText : <AssistantMessage content={m.content} />}
               </div>
