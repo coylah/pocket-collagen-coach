@@ -51,14 +51,33 @@ KEY TRUTHS:
 - Sugar glycates collagen — blood sugar stability matters as much as nutrients.
 
 COLLAGEN SCORE:
-For every main recommendation, include a collagen score out of 100.
+Do not score an entire menu, fridge photo, supermarket shelf or user question.
+
+Only give a Collagen Score for each specific meal, dish, product or recipe recommendation.
+
+For every main recommendation, include a Collagen Score out of 100 directly under the dish or product name.
 
 Use this scoring guide:
 Protein 20 points, Vitamin C 15, Zinc 10, Copper 10, Vitamin A 10, Omega-3 10, Antioxidants 10, Silica 5, Manganese 5, Blood sugar stability 5.
 
-Format the score exactly like this:
+Format each recommendation like this:
+
+1. Dish name
 Collagen score: 82/100
 
+Why it’s good:
+Short explanation.
+
+How to maximise it:
+Short practical improvement.
+
+Hits:
+Protein, Vitamin C, Zinc.
+
+Missing:
+Omega-3, Copper.
+
+Never put one overall score at the top unless the user asks you to score one single meal only.
 Do not invent precision. Use your best estimate based on visible ingredients, menu descriptions, product labels or foods provided by the user.
 
 TONE: Warm, direct, no-nonsense British. Knowledgeable best friend. Never preachy. Short punchy answers. Always name which co-factors a food hits. Real food over supplements every time.
@@ -358,52 +377,6 @@ function QuizScreen({ onDone, onBack }: { onDone: (prefs: any) => void; onBack: 
   )
 }
 
-
-function CollagenScoreCircle({ score }: { score: number }) {
-  const safeScore = Math.max(0, Math.min(100, Math.round(score)))
-  const radius = 28
-  const circumference = 2 * Math.PI * radius
-  const offset = circumference - (safeScore / 100) * circumference
-
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
-      <div style={{ position: 'relative', width: 72, height: 72, flexShrink: 0 }}>
-        <svg width="72" height="72" viewBox="0 0 72 72">
-          <circle cx="36" cy="36" r={radius} fill="none" stroke="#F0E8E4" strokeWidth="8" />
-          <circle
-            cx="36"
-            cy="36"
-            r={radius}
-            fill="none"
-            stroke={C}
-            strokeWidth="8"
-            strokeLinecap="round"
-            strokeDasharray={circumference}
-            strokeDashoffset={offset}
-            transform="rotate(-90 36 36)"
-          />
-        </svg>
-        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
-          <div style={{ fontFamily: SERIF, fontSize: 18, fontWeight: 'bold', color: C, lineHeight: 1 }}>{safeScore}</div>
-          <div style={{ fontFamily: SANS, fontSize: 9, color: '#999', lineHeight: 1 }}>/100</div>
-        </div>
-      </div>
-      <div>
-        <div style={{ fontFamily: SERIF, fontSize: 16, fontWeight: 'bold', color: '#111', marginBottom: 2 }}>Collagen Score</div>
-        <div style={{ fontFamily: SANS, fontSize: 12, color: '#777', lineHeight: 1.4 }}>Based on the 10 collagen co-factors in the food matrix.</div>
-      </div>
-    </div>
-  )
-}
-
-function getCollagenScore(text: string): number | null {
-  const match = text?.match(/collagen score\s*:\s*(\d{1,3})\s*\/\s*100/i)
-  if (!match) return null
-  const score = Number(match[1])
-  if (Number.isNaN(score)) return null
-  return Math.max(0, Math.min(100, score))
-}
-
 function App() {
   const [screen, setScreen] = useState('home')
   const [mode, setMode] = useState<Mode | null>(null)
@@ -570,14 +543,7 @@ function App() {
                 ? { background: C, color: '#FFF', borderRadius: '18px 18px 4px 18px', padding: '12px 16px', fontSize: 14, fontFamily: SANS, lineHeight: 1.6, whiteSpace: 'pre-wrap', maxWidth: '82%' }
                 : { background: '#FFF', color: '#111', border: '1px solid #EDE0DC', borderRadius: '18px 18px 18px 4px', padding: '12px 16px', fontSize: 14, fontFamily: SANS, lineHeight: 1.7, whiteSpace: 'pre-wrap', maxWidth: '82%', boxShadow: '0 1px 4px rgba(139,26,43,0.05)' }
               }>
-                {m.role === 'user' ? (
-                  m.displayText
-                ) : (
-                  <>
-                    {getCollagenScore(m.content) !== null && <CollagenScoreCircle score={getCollagenScore(m.content) as number} />}
-                    {formatAiResponse(m.content)}
-                  </>
-                )}
+                {m.role === 'user' ? m.displayText : formatAiResponse(m.content)}
               </div>
             )}
           </div>
