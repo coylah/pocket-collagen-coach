@@ -346,6 +346,27 @@ function QuizScreen({ onDone, onBack }: { onDone: (prefs: any) => void; onBack: 
   )
 }
 
+
+function formatAiResponse(text: string): string {
+  if (!text) return ''
+
+  return text
+    // Convert markdown bold/italic markers to plain text
+    .replace(/\*\*(.*?)\*\*/g, '$1')
+    .replace(/\*(.*?)\*/g, '$1')
+
+    // Remove markdown divider lines
+    .replace(/^\s*---\s*$/gm, '')
+
+    // Convert markdown bullet asterisks to clean bullets
+    .replace(/^\s*\*\s+/gm, '• ')
+
+    // Clean up spacing
+    .replace(/[ \t]+\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
+}
+
 function App() {
   const [screen, setScreen] = useState('home')
   const [mode, setMode] = useState<Mode | null>(null)
@@ -512,7 +533,7 @@ function App() {
                 ? { background: C, color: '#FFF', borderRadius: '18px 18px 4px 18px', padding: '12px 16px', fontSize: 14, fontFamily: SANS, lineHeight: 1.6, whiteSpace: 'pre-wrap', maxWidth: '82%' }
                 : { background: '#FFF', color: '#111', border: '1px solid #EDE0DC', borderRadius: '18px 18px 18px 4px', padding: '12px 16px', fontSize: 14, fontFamily: SANS, lineHeight: 1.7, whiteSpace: 'pre-wrap', maxWidth: '82%', boxShadow: '0 1px 4px rgba(139,26,43,0.05)' }
               }>
-                {m.role === 'user' ? m.displayText : m.content}
+                {m.role === 'user' ? m.displayText : formatAiResponse(m.content)}
               </div>
             )}
           </div>
