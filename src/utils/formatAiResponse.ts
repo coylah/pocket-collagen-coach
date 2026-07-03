@@ -38,7 +38,7 @@ export function formatAiResponse(text: string): string {
     // Remove markdown bullet characters from the start of lines
     .replace(/^\s*[-•]\s+/gm, "")
 
-    // Make score lines cleaner but keep them attached to each dish
+    // Normalise score lines so the frontend can turn each one into a score badge
     .replace(/^\s*collagen score\s*:\s*(\d{1,3})\s*\/\s*100\s*$/gim, "Collagen Score: $1/100")
 
     // Clean awkward spacing after numbered list items
