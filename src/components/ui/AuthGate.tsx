@@ -1,7 +1,7 @@
 // src/components/AuthGate.tsx
 
 import React, { useEffect, useState } from "react"
-import { initToken } from "../utils/useAuthToken"
+import { initToken } from "../../utils/useAuthToken"
 
 export default function AuthGate({ children }: { children: React.ReactNode }) {
   const [token, setToken] = useState<string | null>(null)
