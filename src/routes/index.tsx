@@ -6,7 +6,7 @@ export const Route = createFileRoute('/')({
   component: App,
 })
 
-const SYSTEM_PROMPT = `You are a Pocket Collagen Coach built on the complete Collagen Kitchen food matrix, created by Coylah — a British skin specialist with over 10 years experience and 4 years building this matrix.
+const SYSTEM_PROMPT = `You are a My Collagen Coach built on the complete Collagen Kitchen food matrix, created by Coylah — a British skin specialist with over 10 years experience and 4 years building this matrix.
 
 Your job: help women eat for collagen every single day. In restaurants, supermarkets, hotels, at home. Wherever they are.
 
@@ -82,7 +82,7 @@ Do not invent precision. Use your best estimate based on visible ingredients, me
 
 TONE: Warm, direct, no-nonsense British. Knowledgeable best friend. Never preachy. Short punchy answers. Always name which co-factors a food hits. Real food over supplements every time.
 
-WHEN ANALYSING PHOTOS: Identify co-factors present, what is missing, give clear practical recommendations.`
+WHEN ANALYSING S: Identify co-factors present, what is missing, give clear practical recommendations.`
 
 const ICONS: Record<string, ReactElement> = {
   fridge: (
@@ -197,12 +197,12 @@ interface Mode {
 }
 
 const MODES: Mode[] = [
-  { id: 'fridge', badge: 'PHOTO', label: "What's in my fridge?", description: "Snap your fridge or cupboard and I'll build you a collagen-rich meal from whatever's in there.", photo: true, placeholder: "Tell me what you've got...", autoPrompt: "I've taken a photo of my fridge or cupboard. What collagen-rich meals can I build? Tell me which co-factors each ingredient hits and what I'm missing." },
-  { id: 'menu', badge: 'PHOTO', label: 'Scan a menu', description: "At a restaurant or hotel buffet? Photo the menu and I'll tell you exactly what to order for maximum collagen co-factors.", photo: true, placeholder: 'Or paste menu items here...', autoPrompt: "I've taken a photo of this menu. What should I order to maximise collagen co-factors? Give me your top picks and why." },
-  { id: 'supermarket', badge: 'PHOTO', label: 'Supermarket scan', description: "Snap a product label in the aisle and I'll tell you whether it earns a place in your collagen kitchen.", photo: true, placeholder: 'Or describe the product...', autoPrompt: "I've taken a photo of this product. Is it worth buying for collagen? What co-factors does it hit and what does it miss?" },
-  { id: 'recipe', badge: 'CHAT', label: 'Build me a recipe', description: "Tell me what you've got and I'll create a collagen-first recipe built around the complete matrix.", photo: false, placeholder: "e.g. salmon, red pepper, spinach, seeds...", autoPrompt: null },
-  { id: 'ask', badge: 'CHAT', label: 'Ask me anything', description: 'Collagen questions answered in plain English. No fluff, no industry spin — just what actually works.', photo: false, placeholder: 'e.g. Is oat milk good for collagen?', autoPrompt: null },
-  { id: 'quiz', badge: 'PERSONALISE', label: 'Take the food quiz', description: "Tell me what you love, what you hate and any foods you avoid — I'll tailor every recommendation around you.", photo: false, placeholder: null, autoPrompt: null },
+  { id: 'fridge', badge: '', label: "What's in my fridge?", description: "Snap your fridge or cupboard and I'll build you a collagen-rich meal from whatever's in there.", photo: true, placeholder: "Tell me what you've got...", autoPrompt: "I've taken a photo of my fridge or cupboard. What collagen-rich meals can I build? Tell me which co-factors each ingredient hits and what I'm missing." },
+  { id: 'menu', badge: '', label: 'Scan a menu', description: "At a restaurant or hotel buffet? Photo the menu and I'll tell you exactly what to order for maximum collagen co-factors.", photo: true, placeholder: 'Or paste menu items here...', autoPrompt: "I've taken a photo of this menu. What should I order to maximise collagen co-factors? Give me your top picks and why." },
+  { id: 'supermarket', badge: '', label: 'Supermarket inspiration', description: "Snap a product label in the aisle and I'll tell you whether it earns a place in your collagen kitchen.", photo: true, placeholder: 'Or describe the product...', autoPrompt: "I've taken a photo of this product. Is it worth buying for collagen? What co-factors does it hit and what does it miss?" },
+  { id: 'recipe', badge: '', label: 'Build me a recipe', description: "Tell me what you've got and I'll create a collagen-first recipe built around the complete matrix.", photo: false, placeholder: "e.g. salmon, red pepper, spinach, seeds...", autoPrompt: null },
+  { id: 'ask', badge: '', label: 'Ask me anything', description: 'Collagen questions answered in plain English. No fluff, no industry spin — just what actually works.', photo: false, placeholder: 'e.g. Is oat milk good for collagen?', autoPrompt: null },
+  { id: 'quiz', badge: '', label: 'Take the food quiz', description: "Tell me what you love, what you hate and any foods you avoid — I'll tailor every recommendation around you.", photo: false, placeholder: null, autoPrompt: null },
 ]
 
 const FOOD_OPTIONS = [
@@ -598,7 +598,7 @@ function App() {
       <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 24px 10px', borderBottom: '1px solid #F0E8E4' }}>
         <div>
           <div style={{ fontFamily: SCRIPT, color: C, fontSize: 20, lineHeight: 1 }}>Love Coylah</div>
-          <div style={{ fontFamily: SERIF, color: '#111', fontSize: 12, fontWeight: '600', marginTop: 3 }}>Pocket Collagen Coach</div>
+          <div style={{ fontFamily: SERIF, color: '#111', fontSize: 12, fontWeight: '600', marginTop: 3 }}>My Collagen Coach</div>
         </div>
         <button onClick={() => setShowInstall(true)} style={{ background: 'none', border: `1.5px solid ${C}`, color: C, borderRadius: 50, padding: '6px 14px', fontSize: 11, fontFamily: SANS, fontWeight: '600', cursor: 'pointer', whiteSpace: 'nowrap' }}>+ Add to home</button>
       </nav>
@@ -623,7 +623,7 @@ function App() {
             <div style={{ width: '100%', height: 1, background: '#F0E8E4', marginBottom: 12 }} />
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span style={{ fontFamily: SANS, fontSize: 12, color: '#999' }}>
-                {m.id === 'quiz' && userPrefs?.completed ? '✓ Preferences saved — tap to update' : m.photo ? '📷 Photo or text' : m.id === 'quiz' ? 'Takes 2 minutes' : '💬 Chat'}
+                {m.id === 'quiz' && userPrefs?.completed ? '✓ Preferences saved — tap to update' : m.photo ? '📷 Type, speak or snap' : m.id === 'quiz' ? 'Takes 2 minutes' : '💬 Chat'}
               </span>
               <span style={{ color: C, fontSize: 20, fontWeight: 'bold' }}>›</span>
             </div>
