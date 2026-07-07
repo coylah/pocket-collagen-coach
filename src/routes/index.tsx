@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState, useRef, useEffect, type ReactElement } from 'react'
 import { formatAiResponse } from '../utils/formatAiResponse'
+import { getStoredToken } from '../utils/useAuthToken'
 
 export const Route = createFileRoute('/')({
   component: App,
@@ -569,15 +570,24 @@ function App() {
     setMessages(updated)
     setInput(''); setPendingImage(null); setPendingB64(null)
     try {
+      const token = getStoredToken()
       const res = await fetch('/api/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify({
           system: buildSystemPrompt(),
           messages: updated.map(m => ({ role: m.role, content: m.role === 'user' ? m.content : m.content })),
         }),
       })
       const data = await res.json()
+      if (!token) {
+        setMessages(p => [...p, { role: 'assistant', content: 'Please use your secure access link to chat.' }])
+        setLoading(false)
+        return
+      }
       const reply = data.content?.find((b: any) => b.type === 'text')?.text || data.reply || 'Something went wrong.'
       setMessages(p => [...p, { role: 'assistant', content: reply }])
     } catch {
