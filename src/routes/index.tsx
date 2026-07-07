@@ -82,7 +82,7 @@ Do not invent precision. Use your best estimate based on visible ingredients, me
 
 TONE: Warm, direct, no-nonsense British. Knowledgeable best friend. Never preachy. Short punchy answers. Always name which co-factors a food hits. Real food over supplements every time.
 
-WHEN ANALYSING S: Identify co-factors present, what is missing, give clear practical recommendations.`
+WHEN ANALYSING PHOTOS: Identify co-factors present, what is missing, give clear practical recommendations.`
 
 const ICONS: Record<string, ReactElement> = {
   fridge: (
@@ -197,12 +197,12 @@ interface Mode {
 }
 
 const MODES: Mode[] = [
-  { id: 'fridge', badge: '', label: "What's in my fridge?", description: "Snap your fridge or cupboard and I'll build you a collagen-rich meal from whatever's in there.", photo: true, placeholder: "Tell me what you've got...", autoPrompt: "I've taken a photo of my fridge or cupboard. What collagen-rich meals can I build? Tell me which co-factors each ingredient hits and what I'm missing." },
-  { id: 'menu', badge: '', label: 'Scan a menu', description: "At a restaurant or hotel buffet? Photo the menu and I'll tell you exactly what to order for maximum collagen co-factors.", photo: true, placeholder: 'Or paste menu items here...', autoPrompt: "I've taken a photo of this menu. What should I order to maximise collagen co-factors? Give me your top picks and why." },
-  { id: 'supermarket', badge: '', label: 'Supermarket inspiration', description: "Snap a product label in the aisle and I'll tell you whether it earns a place in your collagen kitchen.", photo: true, placeholder: 'Or describe the product...', autoPrompt: "I've taken a photo of this product. Is it worth buying for collagen? What co-factors does it hit and what does it miss?" },
-  { id: 'recipe', badge: '', label: 'Build me a recipe', description: "Tell me what you've got and I'll create a collagen-first recipe built around the complete matrix.", photo: false, placeholder: "e.g. salmon, red pepper, spinach, seeds...", autoPrompt: null },
-  { id: 'ask', badge: '', label: 'Ask me anything', description: 'Collagen questions answered in plain English. No fluff, no industry spin — just what actually works.', photo: false, placeholder: 'e.g. Is oat milk good for collagen?', autoPrompt: null },
-  { id: 'quiz', badge: '', label: 'Take the food quiz', description: "Tell me what you love, what you hate and any foods you avoid — I'll tailor every recommendation around you.", photo: false, placeholder: null, autoPrompt: null },
+  { id: 'fridge', badge: 'PHOTO', label: "What's in my fridge?", description: "Snap your fridge or cupboard and I'll build you a collagen-rich meal from whatever's in there.", photo: true, placeholder: "Tell me what you've got...", autoPrompt: "I've taken a photo of my fridge or cupboard. What collagen-rich meals can I build? Tell me which co-factors each ingredient hits and what I'm missing." },
+  { id: 'menu', badge: 'PHOTO', label: 'Scan a menu', description: "At a restaurant or hotel buffet? Photo the menu and I'll tell you exactly what to order for maximum collagen co-factors.", photo: true, placeholder: 'Or paste menu items here...', autoPrompt: "I've taken a photo of this menu. What should I order to maximise collagen co-factors? Give me your top picks and why." },
+  { id: 'supermarket', badge: 'PHOTO', label: 'Supermarket inspiration', description: "Snap a product label in the aisle and I'll tell you whether it earns a place in your collagen kitchen.", photo: true, placeholder: 'Or describe the product...', autoPrompt: "I've taken a photo of this product. Is it worth buying for collagen? What co-factors does it hit and what does it miss?" },
+  { id: 'recipe', badge: 'CHAT', label: 'Build me a recipe', description: "Tell me what you've got and I'll create a collagen-first recipe built around the complete matrix.", photo: false, placeholder: "e.g. salmon, red pepper, spinach, seeds...", autoPrompt: null },
+  { id: 'ask', badge: 'CHAT', label: 'Ask me anything', description: 'Collagen questions answered in plain English. No fluff, no industry spin — just what actually works.', photo: false, placeholder: 'e.g. Is oat milk good for collagen?', autoPrompt: null },
+  { id: 'quiz', badge: 'PERSONALISE', label: 'Take the food quiz', description: "Tell me what you love, what you hate and any foods you avoid — I'll tailor every recommendation around you.", photo: false, placeholder: null, autoPrompt: null },
 ]
 
 const FOOD_OPTIONS = [
@@ -590,50 +590,77 @@ function App() {
     <QuizScreen onBack={() => setScreen('home')} onDone={prefs => { setUserPrefs(prefs); setScreen('home') }} />
   )
 
-  if (screen === 'home') return (
-    <div style={{ minHeight: '100vh', background: '#FFF', fontFamily: SERIF, display: 'flex', flexDirection: 'column' }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap'); *, *::before, *::after { box-sizing: border-box; } body { margin: 0; padding: 0; }`}</style>
-      {showInstall && <InstallModal onDismiss={dismissInstall} />}
+  
+if (screen === 'home') return (
+  <div style={{ minHeight: '100vh', background: '#FFF', fontFamily: SANS, display: 'flex', flexDirection: 'column' }}>
 
-      <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 24px 10px', borderBottom: '1px solid #F0E8E4' }}>
-        <div>
-          <div style={{ fontFamily: SCRIPT, color: C, fontSize: 20, lineHeight: 1 }}>Love Coylah</div>
-          <div style={{ fontFamily: SERIF, color: '#111', fontSize: 12, fontWeight: '600', marginTop: 3 }}>My Collagen Coach</div>
-        </div>
-        <button onClick={() => setShowInstall(true)} style={{ background: 'none', border: `1.5px solid ${C}`, color: C, borderRadius: 50, padding: '6px 14px', fontSize: 11, fontFamily: SANS, fontWeight: '600', cursor: 'pointer', whiteSpace: 'nowrap' }}>+ Add to home</button>
-      </nav>
+    <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid #F0E8E4' }}>
+      <div>
+        <div style={{ fontFamily: SCRIPT, color: C, fontSize: 18 }}>Love Coylah</div>
+        <div style={{ fontFamily: SERIF, fontSize: 14, fontWeight: '600' }}>My Collagen Coach</div>
+      </div>
+    </nav>
 
-      <div style={{ padding: '32px 28px 20px' }}>
-        <div style={{ fontSize: 10, letterSpacing: '0.18em', color: C, fontFamily: SANS, marginBottom: 10 }}>— YOUR SKIN-FOOD COACH —</div>
-        <div style={{ fontFamily: SCRIPT, color: C, fontSize: 32, lineHeight: 1.1, marginBottom: 4 }}>Love Coylah</div>
-        <h1 style={{ fontFamily: SERIF, fontSize: 46, fontWeight: 'bold', color: '#111', lineHeight: 1.1, marginBottom: 14, margin: '0 0 14px' }}>Pocket<br />Collagen<br />Coach</h1>
-        <div style={{ width: 36, height: 2, background: C, marginBottom: 16, marginTop: 14 }} />
-        <p style={{ fontFamily: SANS, fontSize: 14, color: '#555', lineHeight: 1.7, margin: 0 }}>Your complete collagen food matrix in your pocket. At the restaurant, the supermarket, in your kitchen.</p>
+    <div style={{ padding: '20px' }}>
+
+      <div style={{ fontFamily: SERIF, fontSize: 20, fontWeight: '600', marginBottom: 6 }}>
+        Good afternoon 👋
       </div>
 
-      <div style={{ padding: '8px 20px 40px' }}>
-        {MODES.map(m => (
-          <button key={m.id} onClick={() => selectMode(m)} style={{ width: '100%', background: '#FFF', border: '1px solid #EDDFDB', borderRadius: 16, padding: '18px 18px 14px', marginBottom: 14, display: 'flex', flexDirection: 'column', cursor: 'pointer', textAlign: 'left', boxShadow: '0 1px 6px rgba(139,26,43,0.05)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-              <span style={{ background: '#F9ECEE', color: C, fontSize: 10, fontFamily: SANS, fontWeight: '700', letterSpacing: '0.1em', padding: '4px 10px', borderRadius: 50 }}>{m.badge}</span>
-              <span>{CARD_ICONS[m.id]}</span>
-            </div>
-            <div style={{ fontFamily: SERIF, fontSize: 20, fontWeight: 'bold', color: '#111', lineHeight: 1.25, marginBottom: 10 }}>{m.label}</div>
-            <div style={{ fontFamily: SANS, fontSize: 13, color: '#666', lineHeight: 1.6, marginBottom: 14 }}>{m.description}</div>
-            <div style={{ width: '100%', height: 1, background: '#F0E8E4', marginBottom: 12 }} />
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontFamily: SANS, fontSize: 12, color: '#999' }}>
-                {m.id === 'quiz' && userPrefs?.completed ? '✓ Preferences saved — tap to update' : m.photo ? '📷 Type, speak or snap' : m.id === 'quiz' ? 'Takes 2 minutes' : '💬 Chat'}
-              </span>
-              <span style={{ color: C, fontSize: 20, fontWeight: 'bold' }}>›</span>
-            </div>
-          </button>
-        ))}
+      <button onClick={() => setScreen('quiz')} style={{
+        width: '100%',
+        background: C,
+        color: '#fff',
+        border: 'none',
+        borderRadius: 16,
+        padding: '16px',
+        fontSize: 16,
+        fontWeight: '600',
+        marginBottom: 20
+      }}>
+        Take the food quiz
+      </button>
+
+      <div style={{
+        border: '1px solid #E5E5E5',
+        borderRadius: 16,
+        padding: '14px 16px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 20
+      }}>
+        <span style={{ color: '#777' }}>Type, speak or snap...</span>
+        <span style={{ fontSize: 20 }}>+</span>
       </div>
 
-      <p style={{ textAlign: 'center', fontFamily: SANS, fontSize: 11, color: '#BBB', padding: '8px 20px 32px' }}>Built on the complete Collagen Kitchen matrix by Coylah</p>
+      {[MODES.find(m => m.id==='fridge'),
+        MODES.find(m => m.id==='menu'),
+        MODES.find(m => m.id==='supermarket'),
+        MODES.find(m => m.id==='recipe'),
+        MODES.find(m => m.id==='chat')
+      ].map(m => m && (
+        <button key={m.id} onClick={() => selectMode(m)} style={{
+          width: '100%',
+          background: '#fff',
+          border: '1px solid #EEE',
+          borderRadius: 16,
+          padding: '18px',
+          marginBottom: 12,
+          textAlign: 'left'
+        }}>
+          <div style={{ fontFamily: SERIF, fontSize: 18, fontWeight: '600', marginBottom: 6 }}>
+            {m.label}
+          </div>
+          <div style={{ fontFamily: SANS, fontSize: 14, color: '#666' }}>
+            {m.description}
+          </div>
+        </button>
+      ))}
+
     </div>
-  )
+  </div>
+)
 
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: '#FDFAF9', fontFamily: SERIF }}>
