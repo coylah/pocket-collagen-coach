@@ -5,29 +5,34 @@ const COFACTOR_REPLACEMENTS: Array<[RegExp, string]> = [
   [/\bVITAMIN E\b/g, "Vitamin E"],
   [/\bZINC\b/g, "Zinc"],
   [/\bCOPPER\b/g, "Copper"],
+  [/\bIRON\b/g, "Iron"],
   [/\bOMEGA-3\b/g, "Omega-3"],
   [/\bANTIOXIDANTS\b/g, "Antioxidants"],
   [/\bLYCOPENE\b/g, "Lycopene"],
   [/\bSILICA\b/g, "Silica"],
   [/\bMANGANESE\b/g, "Manganese"],
   [/\bBLOOD SUGAR STABILITY\b/g, "Blood sugar stability"],
+  [/\bBUILD\b/g, "BUILD"],
+  [/\bACTIVATE\b/g, "ACTIVATE"],
+  [/\bSUPPORT\b/g, "SUPPORT"],
+  [/\bPROTECT\b/g, "PROTECT"],
 ];
 
 export function formatAiResponse(text: string): string {
   if (!text) return "";
 
   let cleaned = text
-    // Remove markdown heading markers like #, ##, ###
+    // Remove markdown heading markers but keep the heading text
     .replace(/^\s{0,3}#{1,6}\s+/gm, "")
 
-    // Remove markdown bold and italic markers
+    // Keep bullet points. The old formatter stripped them and made outputs look like one ugly block.
+    .replace(/^\s*[-]\s+/gm, "• ")
+
+    // Remove markdown bold/italic markers without removing content
     .replace(/\*\*(.*?)\*\*/g, "$1")
     .replace(/__(.*?)__/g, "$1")
-    .replace(/\*(.*?)\*/g, "$1")
+    .replace(/(?<!\*)\*(?!\*)(.*?)\*(?!\*)/g, "$1")
     .replace(/_(.*?)_/g, "$1")
-
-    // Remove leftover standalone asterisks
-    .replace(/\*/g, "")
 
     // Remove backticks around menu items or food names
     .replace(/`([^`]+)`/g, "$1")
@@ -35,21 +40,21 @@ export function formatAiResponse(text: string): string {
     // Remove markdown horizontal divider lines
     .replace(/^\s*[-*_]{3,}\s*$/gm, "")
 
-    // Remove markdown bullet characters from the start of lines
-    .replace(/^\s*[-•]\s+/gm, "")
-
     // Normalise score lines so the frontend can turn each one into a score badge
-    .replace(/^\s*collagen score\s*:\s*(\d{1,3})\s*\/\s*100\s*$/gim, "Collagen Score: $1/100")
+    .replace(
+      /^\s*(collagen(?:\s+completeness)?\s+score)\s*:\s*(\d{1,3})\s*\/\s*(100|50)\s*$/gim,
+      "Collagen Score: $2/$3"
+    )
 
-    // Clean awkward spacing after numbered list items
+    // Make numbered method steps render clearly
     .replace(/^(\d+)\.\s{2,}/gm, "$1. ")
 
     // Remove excess spaces before punctuation
     .replace(/\s+([,.!?;:])/g, "$1")
 
-    // Clean up spacing and excessive blank lines
+    // Clean up spacing, but keep useful section breaks
     .replace(/[ \t]+\n/g, "\n")
-    .replace(/\n{3,}/g, "\n\n")
+    .replace(/\n{4,}/g, "\n\n\n")
     .trim();
 
   for (const [pattern, replacement] of COFACTOR_REPLACEMENTS) {
