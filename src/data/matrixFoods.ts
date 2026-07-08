@@ -1,28 +1,30 @@
 // Collagen Matrix v3 — profile schema + food universe.
-// Deduped, culinary-first. Bone broth & milk have dedicated onboarding questions.
+// Culinary-first. Bone broth & milk get dedicated questions.
+// Fruit is a single "any strong opinions" question (no per-fruit rating).
 
 export type FoodPref = 'love' | 'like' | 'if_it_fits' | 'not_for_me'
 
 export interface Opt { id: string; label: string }
-export interface FoodItem { id: string; label: string; note?: string }
+export interface FoodItem { id: string; label: string; note?: string; why?: string }
 export interface FoodGroup {
   key: string
   title: string
-  matrix: string // e.g. "BUILD" — shown as small tag
-  why: string   // short "why it matters" sentence
+  matrix: string
+  why: string
   foods: FoodItem[]
 }
 
+// Fruit removed as a rating group — replaced by a single FRUIT_FLAGS question.
 export const FOOD_GROUPS: FoodGroup[] = [
   { key: 'meat_eggs', title: 'Meat & eggs', matrix: 'BUILD',
-    why: 'Protein and the collagen amino-acid raw materials — glycine, proline, lysine.',
+    why: 'Protein and collagen amino-acid raw materials — glycine, proline, lysine.',
     foods: [
       { id: 'chicken', label: 'Chicken' },
       { id: 'turkey', label: 'Turkey' },
       { id: 'beef', label: 'Beef' },
       { id: 'lamb', label: 'Lamb' },
       { id: 'pork', label: 'Pork' },
-      { id: 'liver', label: 'Liver' },
+      { id: 'liver', label: 'Liver', why: 'Very high vitamin A + iron.' },
       { id: 'eggs', label: 'Eggs' },
     ]},
   { key: 'fish', title: 'Fish & seafood', matrix: 'BUILD + PROTECT',
@@ -35,10 +37,10 @@ export const FOOD_GROUPS: FoodGroup[] = [
       { id: 'cod', label: 'Cod' },
       { id: 'trout', label: 'Trout' },
       { id: 'prawns', label: 'Prawns' },
-      { id: 'oysters', label: 'Oysters', note: "Don't panic — I'm not sending you to Waitrose for £700 of oysters 😂. This just helps me when we're scanning menus and eating out." },
+      { id: 'oysters', label: 'Oysters' },
     ]},
-  { key: 'dairy', title: 'Dairy', matrix: 'BUILD + SUPPORT',
-    why: 'Easy protein with useful zinc and calcium.',
+  { key: 'dairy', title: 'Dairy', matrix: 'BUILD',
+    why: 'Useful protein-rich options.',
     foods: [
       { id: 'greek_yoghurt_skyr', label: 'Greek yoghurt / Skyr' },
       { id: 'cottage_cheese', label: 'Cottage cheese' },
@@ -46,24 +48,13 @@ export const FOOD_GROUPS: FoodGroup[] = [
       { id: 'feta', label: 'Feta' },
       { id: 'hard_cheese', label: 'Hard cheese' },
     ]},
-  { key: 'fruit', title: 'Fruit', matrix: 'ACTIVATE + PROTECT',
-    why: 'Vitamin C and protective plant compounds.',
-    foods: [
-      { id: 'kiwi', label: 'Kiwi' },
-      { id: 'strawberries', label: 'Strawberries' },
-      { id: 'blueberries', label: 'Blueberries' },
-      { id: 'raspberries', label: 'Raspberries' },
-      { id: 'oranges', label: 'Oranges' },
-      { id: 'pineapple', label: 'Pineapple' },
-      { id: 'pomegranate', label: 'Pomegranate' },
-    ]},
   { key: 'veg', title: 'Vegetables & greens', matrix: 'ACTIVATE + PROTECT',
     why: 'Vitamin C, vitamin A and antioxidant support.',
     foods: [
-      { id: 'red_pepper', label: 'Red pepper' },
+      { id: 'red_pepper', label: 'Red pepper', why: 'One of the highest vitamin C foods around.' },
       { id: 'yellow_pepper', label: 'Yellow pepper' },
       { id: 'broccoli', label: 'Broccoli' },
-      { id: 'kale', label: 'Kale' },
+      { id: 'kale', label: 'Kale', why: 'Vitamin C, vitamin A and manganese support.' },
       { id: 'spinach', label: 'Spinach' },
       { id: 'sweet_potato', label: 'Sweet potato' },
       { id: 'carrots', label: 'Carrots' },
@@ -86,16 +77,16 @@ export const FOOD_GROUPS: FoodGroup[] = [
       { id: 'black_beans', label: 'Black beans' },
     ]},
   { key: 'nuts', title: 'Nuts & seeds', matrix: 'SUPPORT + PROTECT',
-    why: 'Zinc, copper, manganese and protective fats.',
+    why: 'Useful minerals and protective nutrients.',
     foods: [
-      { id: 'pumpkin_seeds', label: 'Pumpkin seeds' },
+      { id: 'pumpkin_seeds', label: 'Pumpkin seeds', why: 'Strong zinc source.' },
       { id: 'sunflower_seeds', label: 'Sunflower seeds' },
       { id: 'chia_seeds', label: 'Chia seeds' },
       { id: 'flaxseed', label: 'Flaxseed' },
       { id: 'walnuts', label: 'Walnuts' },
       { id: 'cashews', label: 'Cashews' },
       { id: 'almonds', label: 'Almonds' },
-      { id: 'brazil_nuts', label: 'Brazil nuts' },
+      { id: 'brazil_nuts', label: 'Brazil nuts', why: 'Selenium — one a day, no more.' },
       { id: 'tahini', label: 'Tahini' },
     ]},
   { key: 'extras', title: 'Extras & collagen heroes', matrix: 'BUILD + PROTECT',
@@ -172,14 +163,14 @@ export const USUALS: Opt[] = [
   { id: 'seeds', label: 'Seeds' },
 ]
 
+// Milk options — MULTI-SELECT. "any" = I don't mind (exclusive).
 export const MILK_OPTIONS: Opt[] = [
   { id: 'dairy', label: 'Dairy milk' },
   { id: 'soya', label: 'Soya' },
   { id: 'almond', label: 'Almond' },
   { id: 'oat', label: 'Oat' },
   { id: 'coconut', label: 'Coconut' },
-  { id: 'none', label: "I don't really use milk" },
-  { id: 'other', label: 'Other' },
+  { id: 'any', label: "I don't mind" },
 ]
 
 export const BONE_BROTH_OPTIONS: Opt[] = [
@@ -187,11 +178,25 @@ export const BONE_BROTH_OPTIONS: Opt[] = [
   { id: 'buy', label: "I'd buy it" },
   { id: 'make', label: "I'd make it" },
   { id: 'open', label: "I'm open to it" },
-  { id: 'no', label: 'Absolutely not' },
+  { id: 'no', label: 'Not for me' },
 ]
 
+// Fruit — single "any strong opinions" multi-select. "none" = exclusive.
+export const FRUIT_FLAGS: Opt[] = [
+  { id: 'grapefruit', label: 'Grapefruit' },
+  { id: 'kiwi', label: 'Kiwi' },
+  { id: 'blackcurrants', label: 'Blackcurrants' },
+  { id: 'guava', label: 'Guava' },
+  { id: 'mango', label: 'Mango' },
+  { id: 'citrus', label: 'Citrus' },
+  { id: 'not_a_fruit_person', label: "I'm not really a fruit person" },
+  { id: 'none', label: 'No strong opinions' },
+]
+
+export type TextSize = 'standard' | 'larger'
+
 export interface CoachProfile {
-  version: 5
+  version: 6
   completed: boolean
   disclaimerAcceptedAt: string | null
   updatedAt: string
@@ -203,13 +208,14 @@ export interface CoachProfile {
   style: string[]
   usuals: string[]
   usualsCustom: string
-  milk: string | null
-  milkOther: string
+  milks: string[]
   boneBroth: string | null
+  fruitFlags: string[]
+  textSize: TextSize
 }
 
 export const EMPTY_PROFILE: CoachProfile = {
-  version: 5,
+  version: 6,
   completed: false,
   disclaimerAcceptedAt: null,
   updatedAt: '',
@@ -221,9 +227,10 @@ export const EMPTY_PROFILE: CoachProfile = {
   style: [],
   usuals: [],
   usualsCustom: '',
-  milk: null,
-  milkOther: '',
+  milks: [],
   boneBroth: null,
+  fruitFlags: [],
+  textSize: 'standard',
 }
 
 export interface FoodLog {
