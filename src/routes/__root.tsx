@@ -88,6 +88,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Pocket Collagen Coach — Love Coylah" },
+      { name: "twitter:description", content: "Your complete collagen food matrix in your pocket. At the restaurant, the supermarket, in your kitchen." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/bb34703c-da4d-4722-970a-f56b04c84bbb/id-preview-a3f3ea46--86a16dbc-fac9-4bf7-97fa-5089717d93e7.lovable.app-1783511166982.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/bb34703c-da4d-4722-970a-f56b04c84bbb/id-preview-a3f3ea46--86a16dbc-fac9-4bf7-97fa-5089717d93e7.lovable.app-1783511166982.png" },
     ],
     links: [
       {
