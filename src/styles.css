@@ -64,15 +64,24 @@
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
+  --foreground: oklch(0.14 0 0);
+  /* Love Coylah palette */
+  --coylah-hot-pink: #FF2E8A;
+  --coylah-hot-pink-deep: #E01B75;
+  --coylah-baby-pink: #FFE4EF;
+  --coylah-baby-pink-soft: #FFF3F8;
+  --coylah-black: #0A0A0A;
+  --coylah-ink: #1A1A1A;
+  --coylah-mute: #6B6B6B;
+  --coylah-line: #F0D9E4;
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
+  --card-foreground: oklch(0.14 0 0);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
+  --popover-foreground: oklch(0.14 0 0);
+  --primary: oklch(0.63 0.26 0);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.96 0.02 350);
+  --secondary-foreground: oklch(0.14 0 0);
   --muted: oklch(0.968 0.007 247.896);
   --muted-foreground: oklch(0.554 0.046 257.417);
   --accent: oklch(0.968 0.007 247.896);
