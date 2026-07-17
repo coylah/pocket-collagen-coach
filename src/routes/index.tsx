@@ -889,7 +889,7 @@ function parseOptions(txt: string): { before: string; options: ParsedOption[]; p
   if (pickM) { pick = pickM[1].trim(); after = after.replace(pickM[0], '').trim() }
   const body = m[1]
   const options: ParsedOption[] = []
-  const blocks = body.split(/(?:^|\n)-\s+name:\s*/i).slice(1)
+  const blocks = body.split(/(?:^|\n)-\s+name\s*:\s*/i).slice(1)
   for (const b of blocks) {
     const chunk = 'name: ' + b
     const g = (k: string) => (chunk.match(new RegExp(`${k}:\\s*(.+)`, 'i'))?.[1] || '').trim()
