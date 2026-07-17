@@ -1171,7 +1171,26 @@ function Composer({
 function ChatScreen({ mode, profile, onBack }: { mode: ChatMode; profile: CoachProfile | null; onBack: () => void }) {
   const [messages, setMessages] = useState<any[]>([])
   const [input, setInput] = useState('')
-  const [loading, setLoading] = useState(false)
+  const handleClarify = async () => {
+    if (!clarifyText.trim()) return
+    setClarifyLoading(true)
+    const summary = today.map(l => `${l.meal}: ${l.text}`).join('\n')
+    const prompt = `The user logged today:\n${summary}\n\nCoylah's initial analysis was:\n${analysis}\n\nThe user has now added this clarification:\n"${clarifyText}"\n\nPlease refine the collagen score and analysis based on this additional detail. Use the same compact structure as before. Keep it warm and brief.`
+    try {
+      const token = getStoredToken()
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({ system: CORE_BRAIN + buildProfileBlock(profile), messages: [{ role: 'user', content: [{ type: 'text', text: prompt }] }] }),
+      })
+      const data = await res.json()
+      setAnalysis(formatAiResponse(data.content?.find((b: any) => b.type === 'text')?.text || data.reply || ''))
+      setClarifyText('')
+    } catch {
+      setAnalysis("Connection went a bit wobbly. Try again in a moment.")
+    }
+    setClarifyLoading(false)
+  }
   const [preview, setPreview] = useState<string | null>(null)
   const [b64, setB64] = useState<string | null>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
@@ -1474,8 +1493,30 @@ Rules:
         )}
 
         {analysis && (
-          <div style={{ padding: 16, background: '#FFF', border: `1px solid ${LINE}`, borderRadius: 16, marginBottom: 24, fontSize: 15, lineHeight: 1.7, color: INK }}>
-            <TextWithScores text={analysis} />
+          <div style={{ marginBottom: 24 }}>
+            <div style={{ padding: 16, background: '#FFF', border: `1px solid ${LINE}`, borderRadius: 16, fontSize: 15, lineHeight: 1.7, color: INK, marginBottom: 10 }}>
+              <TextWithScores text={analysis} />
+            </div>
+            <div style={{ background: BABY_SOFT, border: `1px solid ${BABY}`, borderRadius: 14, padding: 14 }}>
+              <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: '.14em', color: PINK_DEEP, marginBottom: 8 }}>ANYTHING TO ADD?</div>
+              <div style={{ fontSize: 13, color: INK_SOFT, marginBottom: 10 }}>Was anything vague? Tell me more and I'll refine the score — e.g. "the curry had chicken, spinach and tomatoes".</div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <input
+                  value={clarifyText}
+                  onChange={e => setClarifyText(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter' && clarifyText.trim()) handleClarify() }}
+                  placeholder="Add more detail here..."
+                  style={{ flex: 1, border: `1px solid ${LINE}`, borderRadius: 10, padding: '10px 12px', fontSize: 14, fontFamily: SANS, outline: 'none', background: '#FFF' }}
+                />
+                <button
+                  onClick={handleClarify}
+                  disabled={!clarifyText.trim() || clarifyLoading}
+                  style={{ background: clarifyText.trim() ? PINK : LINE, color: clarifyText.trim() ? '#FFF' : MUTE, border: 'none', borderRadius: 10, padding: '10px 16px', fontSize: 13, fontWeight: 800, cursor: clarifyText.trim() ? 'pointer' : 'default', fontFamily: SANS }}
+                >
+                  {clarifyLoading ? '...' : 'Refine'}
+                </button>
+              </div>
+            </div>
           </div>
         )}
 
