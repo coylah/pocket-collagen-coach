@@ -1301,6 +1301,8 @@ function TrackScreen({ profile, onBack }: { profile: CoachProfile | null; onBack
   const [text, setText] = useState('')
   const [meal, setMeal] = useState<FoodLog['meal']>('breakfast')
   const [analysis, setAnalysis] = useState<string>('')
+const [clarifyText, setClarifyText] = useState<string>('')
+const [clarifyLoading, setClarifyLoading] = useState(false)
   const [loading, setLoading] = useState(false)
   const [statusIdx, setStatusIdx] = useState(0)
   const statuses = ['Right — looking at what you actually logged…', 'Checking BUILD, ACTIVATE, SUPPORT and PROTECT…', 'Finding the easiest win…']
