@@ -931,7 +931,7 @@ function parseRecipe(txt: string): { before: string; recipe: ParsedRecipe | null
       name: get('name') || 'Recipe',
       time: get('time'),
       serves: get('serves'),
-      score: (() => { const s = get('score'); console.log('SCORE DEBUG:', JSON.stringify(s), '->', Number(s)); return Number(s) || 0; })(),
+      score: Number(get('score')) || 0,
       intro: get('intro'),
       ingredients: section('ingredients', ['method', 'why', 'tip', 'boost']),
       method: section('method', ['why', 'tip', 'boost']),
