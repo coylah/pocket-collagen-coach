@@ -1242,26 +1242,7 @@ function Composer({
 function ChatScreen({ mode, profile, onBack }: { mode: ChatMode; profile: CoachProfile | null; onBack: () => void }) {
   const [messages, setMessages] = useState<any[]>([])
   const [input, setInput] = useState('')
-  const handleClarify = async () => {
-    if (!clarifyText.trim()) return
-    setClarifyLoading(true)
-    const summary = today.map(l => `${l.meal}: ${l.text}`).join('\n')
-    const prompt = `The user logged today:\n${summary}\n\nCoylah's initial analysis was:\n${analysis}\n\nThe user has now added this clarification:\n"${clarifyText}"\n\nPlease refine the collagen score and analysis based on this additional detail. Use the same compact structure as before. Keep it warm and brief.`
-    try {
-      const token = getStoredToken()
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-        body: JSON.stringify({ system: CORE_BRAIN + buildProfileBlock(profile), messages: [{ role: 'user', content: [{ type: 'text', text: prompt }] }] }),
-      })
-      const data = await res.json()
-      setAnalysis(formatAiResponse(data.content?.find((b: any) => b.type === 'text')?.text || data.reply || ''))
-      setClarifyText('')
-    } catch {
-      setAnalysis("Connection went a bit wobbly. Try again in a moment.")
-    }
-    setClarifyLoading(false)
-  }
+  const [loading, setLoading] = useState(false)
   const [preview, setPreview] = useState<string | null>(null)
   const [b64, setB64] = useState<string | null>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
