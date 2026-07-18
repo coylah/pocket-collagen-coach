@@ -1429,27 +1429,6 @@ const [clarifyLoading, setClarifyLoading] = useState(false)
     const summary = today.map(l => `${l.meal}: ${l.text}`).join('\n')
     const dateLabel = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })
 
-  const handleClarify = async () => {
-    if (!clarifyText.trim()) return
-    setClarifyLoading(true)
-    const summary = today.map(l => `${l.meal}: ${l.text}`).join('\n')
-    const prompt = `The user logged today:\n${summary}\n\nCoylah's initial analysis was:\n${analysis}\n\nThe user has now added this clarification:\n"${clarifyText}"\n\nPlease refine the collagen score and analysis based on this additional detail. Use the same compact structure as before. Keep it warm and brief.`
-    try {
-      const token = getStoredToken()
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-        body: JSON.stringify({ system: CORE_BRAIN + buildProfileBlock(profile), messages: [{ role: 'user', content: [{ type: 'text', text: prompt }] }] }),
-      })
-      const data = await res.json()
-      setAnalysis(formatAiResponse(data.content?.find((b: any) => b.type === 'text')?.text || data.reply || ''))
-      setClarifyText('')
-    } catch {
-      setAnalysis("Connection went a bit wobbly. Try again in a moment.")
-    }
-    setClarifyLoading(false)
-  }
-
     const mealsLogged = new Set(today.map(l => l.meal))
     const dinnerLogged = mealsLogged.has('dinner')
     const dayComplete = finalView || dinnerLogged
@@ -1504,6 +1483,27 @@ Rules:
       setAnalysis("Connection went a bit wobbly. Try again in a moment.")
     }
     setLoading(false)
+  }
+
+  const handleClarify = async () => {
+    if (!clarifyText.trim()) return
+    setClarifyLoading(true)
+    const summary = today.map(l => `${l.meal}: ${l.text}`).join('\n')
+    const prompt = `The user logged today:\n${summary}\n\nCoylah's initial analysis was:\n${analysis}\n\nThe user has now added this clarification:\n"${clarifyText}"\n\nPlease refine the collagen score and analysis based on this additional detail. Use the same compact structure as before. Keep it warm and brief.`
+    try {
+      const token = getStoredToken()
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({ system: CORE_BRAIN + buildProfileBlock(profile), messages: [{ role: 'user', content: [{ type: 'text', text: prompt }] }] }),
+      })
+      const data = await res.json()
+      setAnalysis(formatAiResponse(data.content?.find((b: any) => b.type === 'text')?.text || data.reply || ''))
+      setClarifyText('')
+    } catch {
+      setAnalysis("Connection went a bit wobbly. Try again in a moment.")
+    }
+    setClarifyLoading(false)
   }
 
   return (
