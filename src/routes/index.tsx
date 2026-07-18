@@ -1834,7 +1834,7 @@ function App() {
       setProfile(p)
     }}
     onStartOver={() => {
-      const fresh = { ...EMPTY_PROFILE, disclaimerAcceptedAt: profile.disclaimerAcceptedAt, version: 7 }
+      const fresh: CoachProfile = { ...EMPTY_PROFILE, disclaimerAcceptedAt: profile.disclaimerAcceptedAt, version: 7 }
       saveProfile(fresh)
       setProfile(fresh)
       setScreen({ kind: 'welcome' })
