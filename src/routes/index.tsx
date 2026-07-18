@@ -1223,7 +1223,7 @@ function AssistantMessage({ content }: { content: string }) {
     return (
       <>
         {opts.before && <TextWithScores text={opts.before} />}
-        <div style={{ fontSize: 11, letterSpacing: '.18em', fontWeight: 800, color: PINK_DEEP, margin: '10px 0 4px' }}>I CAN SEE {opts.options.length} OPTION{opts.options.length === 1 ? '' : 'S'} ✦</div>
+        {opts.options.length > 0 && <div style={{ fontSize: 11, letterSpacing: '.18em', fontWeight: 800, color: PINK_DEEP, margin: '10px 0 4px' }}>I CAN SEE {opts.options.length} OPTION{opts.options.length === 1 ? '' : 'S'} ✦</div>}
         {opts.options.map((o, i) => <OptionCard key={i} o={o} />)}
         {opts.pick && (
           <div style={{ marginTop: 10, padding: '12px 14px', background: INK, color: '#FFF', borderRadius: 14 }}>
