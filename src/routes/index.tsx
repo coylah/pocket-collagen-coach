@@ -1,7 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState, useRef, useEffect, type ReactNode } from 'react'
 import { formatAiResponse } from '../utils/formatAiResponse'
-import { getStoredToken } from '../utils/useAuthToken'
 import {
   FOOD_GROUPS, FOOD_LABEL, RESTRICTIONS, COOK_TIME, STYLE_OPTIONS, USUALS,
   MILK_OPTIONS, BONE_BROTH_OPTIONS, FRUIT_FLAGS,
@@ -1262,16 +1261,10 @@ function ChatScreen({ mode, profile, onBack }: { mode: ChatMode; profile: CoachP
     setPreview(null)
     setB64(null)
     try {
-      const token = getStoredToken()
-      if (!token) {
-        setMessages(p => [...p, { role: 'assistant', content: 'Please use your secure access link to chat.' }])
-        setLoading(false)
-        return
-      }
       const system = CORE_BRAIN + (mode.extraSystem ? `\n\nMODE: ${mode.extraSystem}` : '') + buildProfileBlock(profile)
       const res = await fetch('/api/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ system, messages: updated.map(m => ({ role: m.role, content: m.content })) }),
       })
       const data = await res.json()
@@ -1471,10 +1464,9 @@ Rules:
 - Water is useful context but does not directly score as a Matrix nutrient.`
 
     try {
-      const token = getStoredToken()
       const res = await fetch('/api/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ system: CORE_BRAIN + buildProfileBlock(profile), messages: [{ role: 'user', content: [{ type: 'text', text: prompt }] }] }),
       })
       const data = await res.json()
@@ -1491,10 +1483,9 @@ Rules:
     const summary = today.map(l => `${l.meal}: ${l.text}`).join('\n')
     const prompt = `The user logged today:\n${summary}\n\nCoylah's initial analysis was:\n${analysis}\n\nThe user has now added this clarification:\n"${clarifyText}"\n\nPlease refine the collagen score and analysis based on this additional detail. Use the same compact structure as before. Keep it warm and brief.`
     try {
-      const token = getStoredToken()
       const res = await fetch('/api/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ system: CORE_BRAIN + buildProfileBlock(profile), messages: [{ role: 'user', content: [{ type: 'text', text: prompt }] }] }),
       })
       const data = await res.json()
