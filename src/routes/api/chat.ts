@@ -23,23 +23,6 @@ export const Route = createFileRoute('/api/chat')({
     handlers: {
       POST: async ({ request }) => {
 
-        // 🔒 SAFE AUTH (DO NOT CRASH SSR)
-        const authHeader = request.headers.get("Authorization")
-
-        // If no auth (SSR or first load), return safe response instead of error
-        if (!authHeader) {
-          return Response.json({ reply: "" }) // prevents crash
-        }
-
-        const token = authHeader.replace("Bearer ", "")
-
-        const FREE_TOKENS = ["free"]
-        const PREMIUM_TOKENS = ["premium"]
-
-        if (!FREE_TOKENS.includes(token) && !PREMIUM_TOKENS.includes(token)) {
-          return Response.json({ reply: "" }) // don't crash
-        }
-
         const apiKey = process.env.GEMINI_API_KEY
         if (!apiKey) {
           return Response.json({ reply: 'AI not configured' })
