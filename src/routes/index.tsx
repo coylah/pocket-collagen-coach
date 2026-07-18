@@ -1033,7 +1033,8 @@ function parseRecipe(txt: string): { before: string; recipe: ParsedRecipe | null
   const before = txt.slice(0, m.index).trim()
   const after = txt.slice((m.index || 0) + m[0].length).trim()
   const body = m[1]
-  const get = (k: string) => (body.match(new RegExp(`^${k}:\\s*(.+)$`, 'im'))?.[1] || '').trim().replace(/\r/g, '')
+  const get = (k: string) => (body.match(new RegExp(`^\s*${k}:\s*(.+)$`, 'im'))?.[1] || '').trim().replace(/
+/g, '')
   const section = (k: string, next: string[]) => {
     const re = new RegExp(`${k}:\\s*\\n([\\s\\S]*?)(?=\\n(?:${next.join('|')}):|$)`, 'i')
     const s = body.match(re)?.[1] || ''
