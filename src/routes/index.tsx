@@ -671,37 +671,52 @@ function FoodPrefRow({ label, note, why, value, onChange }: { label: string; not
  * WELCOME
  * ============================================================= */
 function WelcomeScreen({ onNext }: { onNext: () => void }) {
+  const prompts = [
+    'Show me your fridge',
+    'Scan a menu',
+    "Use up what's left in the fridge",
+    'Ask me what to eat',
+    'Track your day',
+  ]
+  const phases = ['Build', 'Activate', 'Support', 'Protect']
   return (
     <div style={{ minHeight: '100dvh', background: '#FFF', display: 'flex', flexDirection: 'column' }}>
       <style>{GLOBAL_CSS}</style>
-      <div style={{ flex: 1, padding: '56px 22px 28px', maxWidth: 560, margin: '0 auto', width: '100%' }}>
-        <div style={{ fontFamily: SCRIPT, color: PINK, fontSize: 22, marginBottom: 10, lineHeight: 1 }}>Love Coylah ✦</div>
-        <h1 style={{ fontFamily: SERIF, fontWeight: 400, fontSize: 38, color: INK, margin: '0 0 10px', letterSpacing: '-.01em', lineHeight: 1.08 }}>
-          Welcome to your<br/><span style={{ fontStyle: 'italic', color: PINK }}>Pocket Collagen Coach</span> ✦
+      <div style={{ flex: 1, padding: '48px 22px 28px', maxWidth: 480, margin: '0 auto', width: '100%', textAlign: 'center' }}>
+        <div style={{ fontFamily: SCRIPT, color: PINK, fontSize: 26, marginBottom: 6, lineHeight: 1 }}>Love Coylah</div>
+        <h1 style={{ fontFamily: SERIF, fontWeight: 400, fontSize: 30, color: INK, margin: '0 0 4px', letterSpacing: '-.01em', lineHeight: 1.2 }}>
+          Your Pocket<br/>Collagen Coach <span style={{ color: PINK }}>✦</span>
         </h1>
-        <p style={{ fontFamily: SERIF, fontStyle: 'italic', fontSize: 19, color: INK_SOFT, margin: '14px 0 22px', lineHeight: 1.4 }}>
-          Your completely personalised food and collagen Coach.
+        <p style={{ fontFamily: SERIF, fontStyle: 'italic', fontSize: 15, color: INK_SOFT, margin: '10px 0 26px', lineHeight: 1.4 }}>
+          Your completely personalised food and collagen coach.
         </p>
 
-        <ul style={{ listStyle: 'none', margin: 0, padding: 0, borderTop: `1px solid ${LINE}` }}>
-          {[
-            'Show me your fridge.',
-            'Scan a menu.',
-            "Give me the random chicken you've got left in the fridge.",
-            'Ask me what to eat.',
-            'Track your day.',
-          ].map(t => (
-            <li key={t} style={{ display: 'flex', gap: 12, padding: '12px 2px', borderBottom: `1px solid ${LINE}`, fontSize: 15, color: INK, lineHeight: 1.5, fontWeight: 500 }}>
-              <span style={{ color: PINK, fontWeight: 800 }}>✦</span>{t}
-            </li>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 22 }}>
+          {prompts.map(t => (
+            <div key={t} style={{
+              display: 'flex', alignItems: 'center', gap: 10, textAlign: 'left',
+              border: '1.5px solid rgba(201,72,91,0.3)', background: BABY, borderRadius: 50, padding: '13px 18px',
+            }}>
+              <span style={{ color: PINK, fontSize: 13, flexShrink: 0 }}>✦</span>
+              <span style={{ fontSize: 14, color: PINK, fontWeight: 500 }}>{t}</span>
+            </div>
           ))}
-        </ul>
+        </div>
 
-        <p style={{ fontSize: 14, color: INK_SOFT, lineHeight: 1.65, margin: '22px 0 12px' }}>
-          I use Coylah's Collagen Matrix to look at <strong>BUILD, ACTIVATE, SUPPORT and PROTECT</strong> — then help you make food choices that actually fit how you eat.
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, justifyContent: 'center', marginBottom: 22 }}>
+          {phases.map(ph => (
+            <span key={ph} style={{
+              fontFamily: SANS, fontSize: 9.5, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase',
+              padding: '5px 11px', borderRadius: 50, border: '1px solid rgba(201,72,91,0.3)', color: PINK, background: '#FFF',
+            }}>{ph}</span>
+          ))}
+        </div>
+
+        <p style={{ fontSize: 13, color: INK_SOFT, lineHeight: 1.6, margin: '0 0 10px', textAlign: 'left' }}>
+          I use Coylah's Collagen Matrix — <strong style={{ color: INK, fontWeight: 600 }}>Build, Activate, Support, Protect</strong> — to help you make food choices that fit how you actually eat.
         </p>
-        <p style={{ fontSize: 14, color: INK_SOFT, lineHeight: 1.65, margin: 0 }}>
-          The more I learn about what you like, how you cook and the food you normally have in, the more useful I become.
+        <p style={{ fontSize: 13, color: INK_SOFT, lineHeight: 1.6, margin: 0, textAlign: 'left' }}>
+          The more I learn about what you like and what's in your kitchen, the more useful I become.
         </p>
       </div>
       <footer style={{ padding: '14px 20px calc(28px + env(safe-area-inset-bottom))', display: 'flex', background: '#FFF' }}>
