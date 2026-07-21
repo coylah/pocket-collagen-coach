@@ -526,18 +526,19 @@ const buildProfileBlock = (p: CoachProfile | null) => {
 /* =============================================================
  * DESIGN TOKENS
  * ============================================================= */
-const PINK = '#FF2E8A'
-const PINK_DEEP = '#D6156B'
-const BABY = '#FCE4EE'
-const BABY_SOFT = '#FFF7FA'
-const INK = '#0A0A0A'
-const INK_SOFT = '#141414'
-const MUTE = '#4A4A4A'
-const MUTE_SOFT = '#6B6B6B'
-const LINE = '#E4E4E7'
-const LINE_SOFT = '#F2F2F4'
-const SANS = "'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
-const SERIF = "'Playfair Display', Georgia, serif"
+const PINK = '#c9485b'
+const PINK_DEEP = '#a83c4c'
+const BABY = 'rgba(201,72,91,0.1)'
+const BABY_SOFT = '#fdf6f7'
+const INK = '#2b2320'
+const INK_SOFT = '#3a312c'
+const MUTE = '#6f6863'
+const MUTE_SOFT = '#8a827d'
+const LINE = '#e4dedb'
+const LINE_SOFT = '#f0ebe8'
+const SANS = "'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+const SERIF = "'Cormorant Garamond', Georgia, serif"
+const SCRIPT = "'Pinyon Script', cursive"
 
 const GLOBAL_CSS = `
 *,*::before,*::after{box-sizing:border-box}
@@ -594,35 +595,40 @@ function Chip({ selected, onClick, children, size = 'md' }: { selected: boolean;
     <button onClick={onClick} style={{
       padding: size === 'sm' ? '8px 13px' : '11px 16px',
       borderRadius: 50,
-      border: `1.5px solid ${selected ? INK : LINE}`,
-      background: selected ? INK : '#FFF',
+      border: `1.5px solid ${selected ? PINK : LINE}`,
+      background: selected ? PINK : '#FFF',
       color: selected ? '#FFF' : INK,
+      fontFamily: SANS,
       fontSize: size === 'sm' ? 13 : 14,
-      fontWeight: selected ? 700 : 600,
+      fontWeight: selected ? 600 : 500,
       cursor: 'pointer',
       transition: 'all .12s',
+      boxShadow: selected ? '0 2px 8px rgba(201,72,91,0.25)' : 'none',
     }}>{selected ? '✓ ' : ''}{children}</button>
   )
 }
 
 function PrimaryBtn({ onClick, children, disabled }: { onClick: () => void; children: ReactNode; disabled?: boolean }) {
   return <button onClick={onClick} disabled={disabled} style={{
-    flex: 1, background: disabled ? '#C7C7CB' : INK, color: '#FFF', border: 'none', borderRadius: 50,
-    padding: '16px 20px', fontSize: 15, fontWeight: 700, letterSpacing: '.03em', cursor: disabled ? 'not-allowed' : 'pointer',
+    flex: 1, background: disabled ? '#D8D2CE' : PINK, color: '#FFF', border: 'none', borderRadius: 50,
+    fontFamily: SANS,
+    padding: '16px 20px', fontSize: 15, fontWeight: 600, letterSpacing: '.02em', cursor: disabled ? 'not-allowed' : 'pointer',
+    boxShadow: disabled ? 'none' : '0 4px 14px rgba(201,72,91,0.3)',
   }}>{children}</button>
 }
 function GhostBtn({ onClick, children }: { onClick: () => void; children: ReactNode }) {
   return <button onClick={onClick} style={{
     background: '#FFF', color: INK, border: `1.5px solid ${LINE}`, borderRadius: 50,
-    padding: '16px 18px', fontSize: 14, fontWeight: 600, cursor: 'pointer',
+    fontFamily: SANS,
+    padding: '16px 18px', fontSize: 14, fontWeight: 500, cursor: 'pointer',
   }}>{children}</button>
 }
 
 function BrandMark({ small }: { small?: boolean }) {
   return (
     <div>
-      <div style={{ fontFamily: SERIF, fontSize: small ? 16 : 18, fontWeight: 800, color: INK, letterSpacing: '-.005em', lineHeight: 1 }}>Pocket Collagen Coach</div>
-      <div style={{ color: PINK, fontSize: 9, letterSpacing: '.24em', fontWeight: 800, marginTop: 4 }}>LOVE COYLAH ✦</div>
+      <div style={{ fontFamily: SERIF, fontSize: small ? 17 : 19, fontWeight: 500, color: INK, letterSpacing: '-.005em', lineHeight: 1 }}>Pocket Collagen Coach</div>
+      <div style={{ fontFamily: SCRIPT, color: PINK, fontSize: small ? 15 : 17, marginTop: 3, lineHeight: 1 }}>Love Coylah ✦</div>
     </div>
   )
 }
@@ -666,12 +672,12 @@ function FoodPrefRow({ label, note, why, value, onChange }: { label: string; not
  * ============================================================= */
 function WelcomeScreen({ onNext }: { onNext: () => void }) {
   return (
-    <div style={{ minHeight: '100dvh', background: BABY_SOFT, display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100dvh', background: '#FFF', display: 'flex', flexDirection: 'column' }}>
       <style>{GLOBAL_CSS}</style>
       <div style={{ flex: 1, padding: '56px 22px 28px', maxWidth: 560, margin: '0 auto', width: '100%' }}>
-        <div style={{ color: PINK, fontSize: 10, letterSpacing: '.28em', fontWeight: 800, marginBottom: 12 }}>LOVE COYLAH ✦</div>
-        <h1 style={{ fontFamily: SERIF, fontSize: 40, fontWeight: 800, color: INK, margin: '0 0 10px', letterSpacing: '-.02em', lineHeight: 1.02 }}>
-          Welcome to your<br/>Pocket Collagen Coach <span style={{ color: PINK }}>✦</span>
+        <div style={{ fontFamily: SCRIPT, color: PINK, fontSize: 22, marginBottom: 10, lineHeight: 1 }}>Love Coylah ✦</div>
+        <h1 style={{ fontFamily: SERIF, fontWeight: 400, fontSize: 38, color: INK, margin: '0 0 10px', letterSpacing: '-.01em', lineHeight: 1.08 }}>
+          Welcome to your<br/><span style={{ fontStyle: 'italic', color: PINK }}>Pocket Collagen Coach</span> ✦
         </h1>
         <p style={{ fontFamily: SERIF, fontStyle: 'italic', fontSize: 19, color: INK_SOFT, margin: '14px 0 22px', lineHeight: 1.4 }}>
           Your completely personalised food and collagen Coach.
@@ -698,7 +704,7 @@ function WelcomeScreen({ onNext }: { onNext: () => void }) {
           The more I learn about what you like, how you cook and the food you normally have in, the more useful I become.
         </p>
       </div>
-      <footer style={{ padding: '14px 20px calc(28px + env(safe-area-inset-bottom))', display: 'flex', background: BABY_SOFT }}>
+      <footer style={{ padding: '14px 20px calc(28px + env(safe-area-inset-bottom))', display: 'flex', background: '#FFF' }}>
         <PrimaryBtn onClick={onNext}>Let's make this yours →</PrimaryBtn>
       </footer>
     </div>
@@ -716,8 +722,8 @@ function NameScreen({ initial, onNext }: { initial: string; onNext: (name: strin
       <div style={{ padding: '52px 22px 24px', maxWidth: 520, margin: '0 auto', width: '100%', flex: 1 }}>
         <BrandMark small />
         <div style={{ marginTop: 40 }}>
-          <div style={{ color: PINK, fontSize: 10, letterSpacing: '.28em', fontWeight: 800, marginBottom: 10 }}>LET'S MAKE THIS YOURS ✦</div>
-          <h1 style={{ fontFamily: SERIF, fontSize: 34, fontWeight: 800, color: INK, margin: '0 0 20px', letterSpacing: '-.02em', lineHeight: 1.1 }}>First — tell me your name <span style={{ color: PINK }}>✦</span></h1>
+          <div style={{ color: PINK, fontSize: 10, letterSpacing: '.2em', fontWeight: 600, marginBottom: 10 }}>LET'S MAKE THIS YOURS ✦</div>
+          <h1 style={{ fontFamily: SERIF, fontSize: 34, fontWeight: 400, color: INK, margin: '0 0 20px', letterSpacing: '-.01em', lineHeight: 1.15 }}>First — tell me your <span style={{ fontStyle: 'italic', color: PINK }}>name</span> ✦</h1>
           <input autoFocus value={name} onChange={e => setName(e.target.value)} placeholder="First name" style={{ width: '100%', padding: '16px 18px', borderRadius: 14, border: `1.5px solid ${LINE}`, fontSize: 18, outline: 'none', fontFamily: SANS, color: INK }} />
         </div>
       </div>
@@ -734,7 +740,7 @@ function NameScreen({ initial, onNext }: { initial: string; onNext: (name: strin
 function DisclaimerScreen({ onAccept }: { onAccept: () => void }) {
   const [checked, setChecked] = useState(false)
   return (
-    <div style={{ minHeight: '100dvh', background: BABY_SOFT, display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100dvh', background: '#FFF', display: 'flex', flexDirection: 'column' }}>
       <style>{GLOBAL_CSS}</style>
       <div style={{ flex: 1, padding: '48px 22px 24px', maxWidth: 520, margin: '0 auto', width: '100%' }}>
         <BrandMark small />
@@ -750,7 +756,7 @@ function DisclaimerScreen({ onAccept }: { onAccept: () => void }) {
           <span style={{ fontSize: 14, fontWeight: 700, color: INK }}>I understand and want to continue</span>
         </label>
       </div>
-      <footer style={{ padding: '14px 20px calc(28px + env(safe-area-inset-bottom))', display: 'flex', background: BABY_SOFT }}>
+      <footer style={{ padding: '14px 20px calc(28px + env(safe-area-inset-bottom))', display: 'flex', background: '#FFF' }}>
         <PrimaryBtn disabled={!checked} onClick={onAccept}>Let's set up my Coach →</PrimaryBtn>
       </footer>
     </div>
@@ -834,7 +840,7 @@ function OnboardingScreen({ initial, onDone, onBack, jumpTo }: { initial: CoachP
           <div style={{ flex: 1, minWidth: 0 }}>
             <BrandMark small />
           </div>
-          <div style={{ fontSize: 10, letterSpacing: '.22em', fontWeight: 800, color: INK }}>{STEP_LABELS[step]}</div>
+          <div style={{ fontFamily: SANS, fontSize: 10, letterSpacing: '.16em', fontWeight: 600, color: MUTE }}>{STEP_LABELS[step]}</div>
         </div>
         <div style={{ height: 3, background: LINE_SOFT, borderRadius: 2 }}>
           <div style={{ height: 3, background: PINK, width: `${progress}%`, borderRadius: 2, transition: 'width .25s' }} />
@@ -844,7 +850,7 @@ function OnboardingScreen({ initial, onDone, onBack, jumpTo }: { initial: CoachP
       <main className="pcc-fade" style={{ flex: 1, overflowY: 'auto', padding: '22px 20px 160px' }} key={`${step}-${foodIdx}`}>
         {step === 0 && (
           <>
-            <h2 style={{ fontFamily: SERIF, fontSize: 26, fontWeight: 700, color: INK, margin: '0 0 6px', letterSpacing: '-.01em' }}>Anything I need to avoid?</h2>
+            <h2 style={{ fontFamily: SERIF, fontSize: 27, fontWeight: 400, color: INK, margin: '0 0 6px', letterSpacing: '-.01em' }}>Anything I need to avoid?</h2>
             <p style={{ fontSize: 14, color: INK_SOFT, lineHeight: 1.6, margin: '0 0 14px' }}>Allergies, intolerances, dietary restrictions — foods you MUST avoid. This is safety, kept separate from dislikes.</p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
               {RESTRICTIONS.map(o => (
@@ -855,7 +861,7 @@ function OnboardingScreen({ initial, onDone, onBack, jumpTo }: { initial: CoachP
               <input value={p.restrictionsOther} onChange={e => patch({ restrictionsOther: e.target.value })} placeholder="Tell me what to avoid…" style={{ marginTop: 12, width: '100%', padding: '12px 14px', borderRadius: 12, border: `1.5px solid ${LINE}`, fontSize: 14, outline: 'none' }} />
             )}
 
-            <h3 style={{ fontFamily: SERIF, fontSize: 22, fontWeight: 700, color: INK, margin: '32px 0 6px' }}>Which milks are you happy with?</h3>
+            <h3 style={{ fontFamily: SERIF, fontSize: 22, fontWeight: 400, color: INK, margin: '32px 0 6px' }}>Which milks are you happy with?</h3>
             <p style={{ fontSize: 13, color: INK_SOFT, lineHeight: 1.6, margin: '0 0 12px' }}>Pick as many as apply. I'll favour unsweetened versions where suitable.</p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
               {MILK_OPTIONS.map(o => (
@@ -863,7 +869,7 @@ function OnboardingScreen({ initial, onDone, onBack, jumpTo }: { initial: CoachP
               ))}
             </div>
 
-            <h3 style={{ fontFamily: SERIF, fontSize: 22, fontWeight: 700, color: INK, margin: '32px 0 6px' }}>Bone broth — where are we?</h3>
+            <h3 style={{ fontFamily: SERIF, fontSize: 22, fontWeight: 400, color: INK, margin: '32px 0 6px' }}>Bone broth — where are we?</h3>
             <p style={{ fontSize: 13, color: INK_SOFT, lineHeight: 1.6, margin: '0 0 12px' }}>
               Bone broth is one of my favourite direct collagen foods. It naturally provides collagen-derived amino acids including glycine, proline and hydroxyproline — and it's ridiculously easy to use in rice, quinoa, soups, sauces and stews.
             </p>
@@ -871,8 +877,9 @@ function OnboardingScreen({ initial, onDone, onBack, jumpTo }: { initial: CoachP
               {BONE_BROTH_OPTIONS.map(o => {
                 const a = p.boneBroth === o.id
                 return <button key={o.id} onClick={() => patch({ boneBroth: o.id })} style={{
-                  textAlign: 'left', padding: '14px 16px', borderRadius: 14, border: `1.5px solid ${a ? INK : LINE}`,
-                  background: a ? INK : '#FFF', color: a ? '#FFF' : INK, fontSize: 15, fontWeight: a ? 700 : 600, cursor: 'pointer',
+                  textAlign: 'left', padding: '14px 16px', borderRadius: 14, border: `1.5px solid ${a ? PINK : LINE}`,
+                  background: a ? PINK : '#FFF', color: a ? '#FFF' : INK, fontFamily: SANS, fontSize: 15, fontWeight: a ? 600 : 500, cursor: 'pointer',
+                  boxShadow: a ? '0 2px 8px rgba(201,72,91,0.25)' : 'none',
                 }}>{a ? '✓ ' : ''}{o.label}</button>
               })}
             </div>
@@ -881,9 +888,9 @@ function OnboardingScreen({ initial, onDone, onBack, jumpTo }: { initial: CoachP
 
         {step === 1 && foodIdx === 0 && (
           <>
-            <div style={{ fontSize: 10, color: PINK, letterSpacing: '.22em', fontWeight: 800, marginBottom: 6 }}>YOUR FOOD — 1 / {totalFoodPages}</div>
-            <h2 style={{ fontFamily: SERIF, fontSize: 26, fontWeight: 700, color: INK, margin: '0 0 6px', letterSpacing: '-.01em' }}>Fruit — any strong opinions? <span style={{ color: PINK }}>✦</span></h2>
-            <div style={{ display: 'inline-block', padding: '4px 10px', background: BABY, borderRadius: 50, fontSize: 10, letterSpacing: '.14em', fontWeight: 800, color: PINK_DEEP, marginBottom: 10 }}>ACTIVATE + PROTECT ✦</div>
+            <div style={{ fontFamily: SANS, fontSize: 10, color: PINK, letterSpacing: '.16em', fontWeight: 600, marginBottom: 6 }}>YOUR FOOD — 1 / {totalFoodPages}</div>
+            <h2 style={{ fontFamily: SERIF, fontSize: 27, fontWeight: 400, color: INK, margin: '0 0 8px', letterSpacing: '-.01em' }}>Fruit — any strong opinions? <span style={{ color: PINK }}>✦</span></h2>
+            <div style={{ display: 'inline-block', padding: '4px 11px', background: 'rgba(201,72,91,0.1)', border: '1px solid rgba(201,72,91,0.25)', borderRadius: 50, fontFamily: SANS, fontSize: 10, letterSpacing: '.1em', fontWeight: 600, textTransform: 'uppercase', color: PINK, marginBottom: 10 }}>Activate + Protect ✦</div>
             <p style={{ fontSize: 14, color: INK_SOFT, lineHeight: 1.6, margin: '0 0 14px' }}>Most fruit is easy enough to work around. Just tell me if there are any stronger flavours or useful Matrix foods you're funny about.</p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
               {FRUIT_FLAGS.map(o => (
@@ -897,9 +904,9 @@ function OnboardingScreen({ initial, onDone, onBack, jumpTo }: { initial: CoachP
           const g = FOOD_GROUPS[foodIdx - 1]
           return (
             <>
-              <div style={{ fontSize: 10, color: PINK, letterSpacing: '.22em', fontWeight: 800, marginBottom: 6 }}>YOUR FOOD — {foodIdx + 1} / {totalFoodPages}</div>
-              <h2 style={{ fontFamily: SERIF, fontSize: 26, fontWeight: 700, color: INK, margin: '0 0 6px', letterSpacing: '-.01em' }}>{g.title}</h2>
-              <div style={{ display: 'inline-block', padding: '4px 10px', background: BABY, borderRadius: 50, fontSize: 10, letterSpacing: '.14em', fontWeight: 800, color: PINK_DEEP, marginBottom: 8 }}>{g.matrix} ✦</div>
+              <div style={{ fontFamily: SANS, fontSize: 10, color: PINK, letterSpacing: '.16em', fontWeight: 600, marginBottom: 6 }}>YOUR FOOD — {foodIdx + 1} / {totalFoodPages}</div>
+              <h2 style={{ fontFamily: SERIF, fontSize: 27, fontWeight: 400, color: INK, margin: '0 0 8px', letterSpacing: '-.01em' }}>{g.title}</h2>
+              <div style={{ display: 'inline-block', padding: '4px 11px', background: 'rgba(201,72,91,0.1)', border: '1px solid rgba(201,72,91,0.25)', borderRadius: 50, fontFamily: SANS, fontSize: 10, letterSpacing: '.1em', fontWeight: 600, textTransform: 'uppercase', color: PINK, marginBottom: 8 }}>{g.matrix} ✦</div>
               <p style={{ fontSize: 13, color: INK_SOFT, lineHeight: 1.6, margin: '0 0 8px' }}>{g.why}</p>
               <p style={{ fontSize: 12, color: MUTE, lineHeight: 1.6, margin: '0 0 6px', fontStyle: 'italic' }}>Tap how you feel about each — skip anything you don't know.</p>
               <div>
@@ -989,23 +996,23 @@ function CompletionScreen({ profile, onEnter }: { profile: CoachProfile; onEnter
   ]
 
   return (
-    <div style={{ minHeight: '100dvh', background: BABY_SOFT, display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100dvh', background: '#FFF', display: 'flex', flexDirection: 'column' }}>
       <style>{GLOBAL_CSS}</style>
       <div style={{ flex: 1, padding: '48px 22px 24px', maxWidth: 560, margin: '0 auto', width: '100%' }}>
-        <div style={{ color: PINK, fontSize: 10, letterSpacing: '.28em', fontWeight: 800, marginBottom: 10 }}>YOUR COACH IS READY ✦</div>
-        <h1 style={{ fontFamily: SERIF, fontSize: 34, fontWeight: 800, color: INK, margin: '0 0 8px', letterSpacing: '-.02em', lineHeight: 1.05 }}>
+        <div style={{ fontFamily: SCRIPT, color: PINK, fontSize: 20, marginBottom: 8 }}>Your coach is ready ✦</div>
+        <h1 style={{ fontFamily: SERIF, fontSize: 34, fontWeight: 400, color: INK, margin: '0 0 8px', letterSpacing: '-.01em', lineHeight: 1.1 }}>
           Right{profile.firstName ? `, ${profile.firstName}` : ''}.
         </h1>
         <p style={{ fontFamily: SERIF, fontStyle: 'italic', fontSize: 18, color: INK_SOFT, margin: '0 0 10px', lineHeight: 1.4 }}>I know enough to stop giving you generic food advice.</p>
         <p style={{ fontSize: 13, color: INK_SOFT, margin: '0 0 22px', lineHeight: 1.55 }}>Nothing is locked in. You can update any of these preferences from My Coach whenever you like.</p>
         {cards.map(c => (
           <div key={c.t} style={{ background: '#FFF', border: `1px solid ${LINE}`, borderRadius: 16, padding: '14px 16px', marginBottom: 10 }}>
-            <div style={{ fontFamily: SERIF, fontSize: 17, fontWeight: 700, color: INK, marginBottom: 4 }}>{c.t}</div>
+            <div style={{ fontFamily: SERIF, fontSize: 17, fontWeight: 500, color: INK, marginBottom: 4 }}>{c.t}</div>
             <div style={{ fontSize: 13, color: INK_SOFT, lineHeight: 1.55 }}>{c.s}</div>
           </div>
         ))}
       </div>
-      <footer style={{ padding: '14px 20px calc(28px + env(safe-area-inset-bottom))', display: 'flex', background: BABY_SOFT }}>
+      <footer style={{ padding: '14px 20px calc(28px + env(safe-area-inset-bottom))', display: 'flex', background: '#FFF' }}>
         <PrimaryBtn onClick={onEnter}>Meet my Coach →</PrimaryBtn>
       </footer>
     </div>
