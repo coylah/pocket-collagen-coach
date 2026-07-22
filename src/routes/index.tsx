@@ -304,6 +304,7 @@ pick: <winning item> — <one short reason>
 
 CRITICAL: Every option MUST start with exactly "- name:" on its own line. No variations. No numbering. No other bullet format.
 Maximum 3 options. Never give one overall score for the full image.
+This block is ONLY for scoring items that already exist and are visible in a photo (a menu, fridge, shelf, buffet). It requires a real score for each entry. NEVER use this block to suggest hypothetical meal ideas in a text conversation — there is nothing to score yet. For offering meal ideas conversationally, just write them as plain short paragraphs or a simple dash list with no score field.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 7. SINGLE-ITEM SCORED RESPONSE
@@ -1247,7 +1248,7 @@ function AssistantMessage({ content }: { content: string }) {
         {opts.before && <TextWithScores text={opts.before} />}
         {opts.options.length > 0 && <div style={{ fontSize: 11, letterSpacing: '.18em', fontWeight: 800, color: PINK_DEEP, margin: '10px 0 4px' }}>I CAN SEE {opts.options.length} OPTION{opts.options.length === 1 ? '' : 'S'} ✦</div>}
         {opts.options.map((o, i) => <OptionCard key={i} o={o} />)}
-        {opts.pick && (
+        {opts.options.length > 0 && opts.pick && (
           <div style={{ marginTop: 10, padding: '12px 14px', background: INK, color: '#FFF', borderRadius: 14 }}>
             <div style={{ fontSize: 10, letterSpacing: '.22em', fontWeight: 800, color: PINK, marginBottom: 4 }}>MY PICK ✦</div>
             <div style={{ fontSize: 15, lineHeight: 1.5 }}>{opts.pick}</div>
@@ -1299,7 +1300,7 @@ const CHAT_MODES: Record<string, ChatMode> = {
     placeholder: "Tell me what you've got, how much time, or what you're craving…",
     starter: "What have you got — and are we after quick, comforting, fresh, meal prep, or something else?",
     autoPrompt: null,
-    extraSystem: "This is Build me a meal. Do not produce a full recipe until the user has chosen a specific dish, unless they explicitly ask for one. Ask no more than two useful questions, then offer 3 or 4 genuinely different meal ideas with short descriptions. Once they choose, return the full recipe in the ===RECIPE=== block. Respect cook time, portions, preferences, leftovers and meal-prep needs. UK English.",
+    extraSystem: "This is Build me a meal — a text conversation, not an image scan. Do not produce a full recipe until the user has chosen a specific dish, unless they explicitly ask for one. Ask no more than two useful questions, then offer 3 or 4 genuinely different meal ideas with short descriptions, written as a plain short paragraph or simple dash list (e.g. '- Lemon chicken traybake — quick, one pan, uses up the peppers'). Do NOT use the ===OPTIONS=== block for this — that block is only for scoring items visible in a photo, and these are hypothetical ideas with nothing to score yet. Once the user picks one, return the full recipe in the ===RECIPE=== block. Respect cook time, portions, preferences, leftovers and meal-prep needs. UK English.",
   },
   ask: {
     id: 'ask',
@@ -1841,51 +1842,113 @@ function ProfileScreen({ profile, onBack, onEdit, onStartOver, onEditName, onSet
 /* =============================================================
  * HOME
  * ============================================================= */
-const HOME_ACTIONS = [
-  { id: 'scan',  label: 'Scan something', sub: 'Fridge, menu, label, shelf, buffet — show me.' },
-  { id: 'meal',  label: 'Build me a meal', sub: "Tell me what you've got. I'll make it dinner." },
-  { id: 'track', label: 'Track my day', sub: "Log what you've had and I'll check the picture." },
-  { id: 'ask',   label: 'Ask your Coach', sub: 'Food choices, collagen questions, swaps — what would you do?' },
+const CHAT_SUGGESTIONS = [
+  { id: 'scan', label: 'Scan something', sub: 'Fridge, menu, label, shelf, buffet — show me.' },
+  { id: 'meal', label: 'Build a meal', sub: "Tell me what you've got. I'll make it dinner." },
+  { id: 'ask',  label: 'Ask your Coach', sub: 'Food choices, collagen questions, swaps — what would you do?' },
 ]
 
 function HomeScreen({ profile, onOpen, onProfile }: { profile: CoachProfile; onOpen: (id: string) => void; onProfile: () => void }) {
   const title = profile.firstName ? `${profile.firstName}'s Collagen Coach` : 'Your Collagen Coach'
   return (
-    <div style={{ minHeight: '100dvh', background: '#FFF' }}>
+    <div style={{ height: '100dvh', overflow: 'hidden', background: '#FFF', display: 'flex', flexDirection: 'column' }}>
       <style>{GLOBAL_CSS}</style>
-      <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 18px', borderBottom: `1px solid ${LINE_SOFT}` }}>
+      <nav style={{ flexShrink: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 18px', borderBottom: `1px solid ${LINE_SOFT}` }}>
         <BrandMark small />
-        <button onClick={onProfile} style={{ background: BABY_SOFT, border: `1.5px solid ${LINE}`, borderRadius: 50, padding: '10px 14px', cursor: 'pointer', fontSize: 13, fontWeight: 700, color: INK }}>
+        <button onClick={onProfile} style={{
+          background: BABY, border: '1.5px solid rgba(201,72,91,0.3)', borderRadius: 50,
+          padding: '7px 12px', cursor: 'pointer', fontFamily: SANS, fontSize: 11.5, fontWeight: 600, color: PINK,
+        }}>
           Update my preferences
         </button>
       </nav>
 
-      <section style={{ padding: '28px 20px 12px', maxWidth: 620, margin: '0 auto' }}>
-        <h1 style={{ fontFamily: SERIF, fontSize: 32, fontWeight: 800, color: INK, margin: '0 0 6px', letterSpacing: '-.02em', lineHeight: 1.05 }}>
+      {/* Title stands alone in its own centred block, THEN the rule — the
+          tagline moved down to sit directly above the input bar instead */}
+      <section style={{ flex: '0 1 auto', minHeight: 70, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '4px 20px', textAlign: 'center' }}>
+        <h1 style={{ fontFamily: SERIF, fontSize: 28, fontWeight: 400, color: INK, margin: 0, letterSpacing: '-.01em', lineHeight: 1.1 }}>
           {title}
         </h1>
-        <div style={{ fontFamily: SERIF, fontStyle: 'italic', color: PINK, fontSize: 22, fontWeight: 700, marginTop: 6 }}>Right, what are we doing today?</div>
-        <div style={{ width: 40, height: 3, background: INK, margin: '14px 0 12px' }} />
-        <p style={{ fontSize: 14, color: INK_SOFT, margin: 0, lineHeight: 1.6 }}>Pick the job — I'll do the collagen thinking.</p>
+        <div style={{ width: 28, height: 2, background: PINK, margin: '8px auto 0', borderRadius: 2 }} />
       </section>
 
-      <section style={{ padding: '16px 16px 40px', maxWidth: 620, margin: '0 auto' }}>
-        {HOME_ACTIONS.map((a, i) => (
-          <button key={a.id} onClick={() => onOpen(a.id)} style={{
-            width: '100%', display: 'flex', alignItems: 'center', gap: 14,
-            background: '#FFF', border: `1px solid ${LINE}`, borderRadius: 16,
-            padding: '16px 16px', marginBottom: 10, textAlign: 'left', cursor: 'pointer',
-          }}>
-            <span style={{ width: 36, height: 36, borderRadius: 12, background: i === 0 ? PINK : (i === 1 ? INK : BABY_SOFT), color: (i === 0 || i === 1) ? '#FFF' : INK, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: SERIF, fontWeight: 800, fontSize: 16, flexShrink: 0 }}>{i + 1}</span>
-            <span style={{ flex: 1, minWidth: 0 }}>
-              <span style={{ display: 'block', fontFamily: SERIF, fontSize: 18, fontWeight: 800, color: INK, lineHeight: 1.2 }}>{a.label}</span>
-              <span style={{ display: 'block', fontSize: 13, color: INK_SOFT, marginTop: 3, lineHeight: 1.4 }}>{a.sub}</span>
-            </span>
-            <span style={{ color: PINK, fontSize: 20, fontWeight: 700 }}>›</span>
-          </button>
-        ))}
-        <p style={{ textAlign: 'center', fontSize: 10, color: MUTE, marginTop: 20, letterSpacing: '.08em' }}>Built on Coylah's 11-factor Collagen Matrix ✦</p>
+      <section style={{ flex: '1 1 auto', minHeight: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 8, padding: '4px 20px' }}>
+        <div style={{ fontFamily: SERIF, fontStyle: 'italic', color: PINK, fontSize: 15, fontWeight: 500, textAlign: 'center', marginBottom: 1 }}>
+          Right, what are we doing today?
+        </div>
+
+        {/* Shared input bar — the single entry point Scan/Build/Ask all feed
+            into, ChatGPT-style. Tapping a suggestion below pre-fills this. */}
+        <button onClick={() => onOpen('ask')} style={{
+          display: 'flex', alignItems: 'center', gap: 8, border: `1.5px solid ${LINE}`, borderRadius: 50,
+          padding: '6px 6px 6px 15px', background: '#FFF', boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+          cursor: 'pointer', textAlign: 'left', width: '100%',
+        }}>
+          <span style={{ color: MUTE, fontSize: 17, flexShrink: 0 }}>+</span>
+          <span style={{ flex: 1, fontSize: 12, color: MUTE }}>Ask your coach anything…</span>
+          <span style={{
+            width: 28, height: 28, borderRadius: '50%', background: PINK, color: '#FFF',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 13,
+          }}>↑</span>
+        </button>
+
+        {/* Suggestions — plain list items (no button/border wrapper), title
+            styled identically to Track my day's title below for consistency */}
+        <div>
+          {CHAT_SUGGESTIONS.map(s => (
+            <div key={s.id} onClick={() => onOpen(s.id)} style={{ display: 'flex', alignItems: 'flex-start', gap: 7, padding: '5px 2px', cursor: 'pointer' }}>
+              <span style={{ color: PINK, fontSize: 11, flexShrink: 0, marginTop: 3 }}>✦</span>
+              <span>
+                <span style={{ fontFamily: SERIF, display: 'block', fontSize: 15, color: PINK, fontWeight: 500, lineHeight: 1.2 }}>{s.label}</span>
+                <span style={{ display: 'block', fontSize: 10.5, color: INK_SOFT, marginTop: 1, lineHeight: 1.25 }}>{s.sub}</span>
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {/* Track my day — the one genuinely separate feature, kept as its
+            own pill button below the shared chat entry point */}
+        <button onClick={() => onOpen('track')} style={{
+          width: '100%', display: 'flex', alignItems: 'center', gap: 10, textAlign: 'left', flexShrink: 0,
+          border: '1.5px solid rgba(201,72,91,0.3)', background: BABY, borderRadius: 20, padding: '10px 16px', cursor: 'pointer',
+        }}>
+          <span style={{ flex: 1, minWidth: 0 }}>
+            <span style={{ display: 'block', fontFamily: SERIF, fontSize: 15, fontWeight: 500, color: PINK, lineHeight: 1.2 }}>Track my day</span>
+            <span style={{ display: 'block', fontSize: 10.5, color: INK_SOFT, marginTop: 2, lineHeight: 1.25 }}>Log what you've had and I'll check the picture.</span>
+          </span>
+          <span style={{ color: PINK, fontSize: 17, flexShrink: 0 }}>›</span>
+        </button>
       </section>
+
+      <p style={{ flexShrink: 0, textAlign: 'center', fontSize: 8.5, color: MUTE, letterSpacing: '.08em', textTransform: 'uppercase', margin: '0 0 4px' }}>
+        Built on Coylah's 11-factor Collagen Matrix ✦
+      </p>
+
+      {/* Footer — matches the cookbook's Footer exactly: 52px mirrored
+          photo, Pinyon Script signature, uppercase caption, then the
+          verbatim disclaimer text (not paraphrased) below at reduced
+          opacity, same hierarchy as the cookbook. */}
+      <footer style={{ flexShrink: 0, borderTop: `1px solid ${LINE}`, paddingTop: 10, paddingBottom: 'calc(8px + env(safe-area-inset-bottom))', textAlign: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, maxWidth: 340, margin: '0 auto', textAlign: 'left' }}>
+          <img
+            src="/images/coylah.jpg"
+            alt="Coylah"
+            style={{ width: 52, height: 52, borderRadius: '50%', objectFit: 'cover', objectPosition: 'center 15%', flexShrink: 0, transform: 'scaleX(-1)' }}
+          />
+          <div>
+            <p style={{ fontFamily: SCRIPT, fontSize: 21, color: PINK, lineHeight: 1.3, margin: 0 }}>Love Coylah</p>
+            <p style={{ fontFamily: SERIF, fontSize: 10.5, letterSpacing: '.2em', textTransform: 'uppercase', color: INK_SOFT, margin: '2px 0 0' }}>
+              Age Slow · Reclaim Your Glow
+            </p>
+          </div>
+        </div>
+        <p style={{ margin: '8px auto 0', fontSize: 10, color: MUTE, opacity: 0.6, maxWidth: 300 }}>
+          Pocket Collagen Coach · your food and collagen companion.
+        </p>
+        <p style={{ margin: '4px auto 0', fontSize: 9, color: MUTE, opacity: 0.4, maxWidth: 300, padding: '0 16px', lineHeight: 1.4 }}>
+          Coylah is not a doctor, dermatologist or registered nutritionist. Always speak to your GP before making changes to your diet or skincare.
+        </p>
+      </footer>
     </div>
   )
 }
