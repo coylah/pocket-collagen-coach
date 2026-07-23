@@ -673,10 +673,9 @@ function FoodPrefRow({ label, note, why, value, onChange }: { label: string; not
  * ============================================================= */
 function WelcomeScreen({ onNext }: { onNext: () => void }) {
   const prompts = [
+    'Ask me what to eat',
     'Show me your fridge',
     'Scan a menu',
-    "Use up what's left in the fridge",
-    'Ask me what to eat',
     'Track your day',
   ]
   const phases = ['Build', 'Activate', 'Support', 'Protect']
