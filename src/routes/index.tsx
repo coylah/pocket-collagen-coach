@@ -591,21 +591,22 @@ function todayISO() { return new Date().toISOString().slice(0, 10) }
 /* =============================================================
  * Primitives
  * ============================================================= */
-function Chip({ selected, onClick, children, size = 'md' }: { selected: boolean; onClick: () => void; children: ReactNode; size?: 'sm' | 'md' }) {
+function Chip({ selected, onClick, children, size = 'md', disabled = false }: { selected: boolean; onClick: () => void; children: ReactNode; size?: 'sm' | 'md'; disabled?: boolean }) {
   return (
-    <button onClick={onClick} style={{
+    <button onClick={disabled ? undefined : onClick} disabled={disabled} style={{
       padding: size === 'sm' ? '8px 13px' : '11px 16px',
       borderRadius: 50,
-      border: `1.5px solid ${selected ? PINK : LINE}`,
-      background: selected ? PINK : '#FFF',
-      color: selected ? '#FFF' : INK,
+      border: `1.5px solid ${disabled ? LINE_SOFT : selected ? PINK : LINE}`,
+      background: disabled ? LINE_SOFT : selected ? PINK : '#FFF',
+      color: disabled ? MUTE : selected ? '#FFF' : INK,
       fontFamily: SANS,
       fontSize: size === 'sm' ? 13 : 14,
       fontWeight: selected ? 600 : 500,
-      cursor: 'pointer',
+      cursor: disabled ? 'not-allowed' : 'pointer',
+      opacity: disabled ? 0.6 : 1,
       transition: 'all .12s',
-      boxShadow: selected ? '0 2px 8px rgba(201,72,91,0.25)' : 'none',
-    }}>{selected ? '✓ ' : ''}{children}</button>
+      boxShadow: selected && !disabled ? '0 2px 8px rgba(201,72,91,0.25)' : 'none',
+    }}>{selected && !disabled ? '✓ ' : ''}{children}</button>
   )
 }
 
@@ -796,13 +797,23 @@ function OnboardingScreen({ initial, onDone, onBack, jumpTo }: { initial: CoachP
     return n
   })
 
+  // Restrictions and milk options use different id schemes for the same
+  // allergen in one case (restriction "soy" vs milk option "soya"), so this
+  // maps restriction ids to their corresponding milk-option id wherever one
+  // exists. Used to auto-clear and block the contradictory milk choice.
+  const RESTRICTION_TO_MILK: Record<string, string> = { dairy: 'dairy', soy: 'soya' }
+
   const toggleRestriction = (id: string) => {
     if (id === 'none') {
       patch({ restrictions: ['none'], restrictionsOther: '' })
       return
     }
     const cur = p.restrictions.filter(r => r !== 'none')
-    patch({ restrictions: cur.includes(id) ? cur.filter(x => x !== id) : [...cur, id] })
+    const adding = !cur.includes(id)
+    const nextRestrictions = adding ? [...cur, id] : cur.filter(x => x !== id)
+    const conflictMilk = RESTRICTION_TO_MILK[id]
+    const nextMilks = adding && conflictMilk ? p.milks.filter(m => m !== conflictMilk) : p.milks
+    patch({ restrictions: nextRestrictions, milks: nextMilks })
   }
 
   const toggleArr = (key: 'style' | 'usuals', id: string) => {
@@ -815,6 +826,10 @@ function OnboardingScreen({ initial, onDone, onBack, jumpTo }: { initial: CoachP
       patch({ milks: p.milks.includes('any') ? [] : ['any'] })
       return
     }
+    // Defensive: even if a stray click gets through, never allow selecting
+    // a milk that's blocked by an active restriction.
+    const blockedMilks = p.restrictions.map(r => RESTRICTION_TO_MILK[r]).filter(Boolean)
+    if (blockedMilks.includes(id)) return
     const cur = p.milks.filter(m => m !== 'any')
     patch({ milks: cur.includes(id) ? cur.filter(m => m !== id) : [...cur, id] })
   }
@@ -879,10 +894,14 @@ function OnboardingScreen({ initial, onDone, onBack, jumpTo }: { initial: CoachP
             <h3 style={{ fontFamily: SERIF, fontSize: 22, fontWeight: 400, color: INK, margin: '32px 0 6px' }}>Which milks are you happy with?</h3>
             <p style={{ fontSize: 13, color: INK_SOFT, lineHeight: 1.6, margin: '0 0 12px' }}>Pick as many as apply. I'll favour unsweetened versions where suitable.</p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-              {MILK_OPTIONS.map(o => (
-                <Chip key={o.id} selected={p.milks.includes(o.id)} onClick={() => toggleMilk(o.id)}>{o.label}</Chip>
-              ))}
+              {MILK_OPTIONS.map(o => {
+                const blocked = p.restrictions.map(r => RESTRICTION_TO_MILK[r]).includes(o.id)
+                return <Chip key={o.id} selected={p.milks.includes(o.id)} onClick={() => toggleMilk(o.id)} disabled={blocked}>{o.label}</Chip>
+              })}
             </div>
+            {p.restrictions.map(r => RESTRICTION_TO_MILK[r]).some(Boolean) && (
+              <p style={{ fontSize: 11.5, color: MUTE, marginTop: 6 }}>Greyed out because it conflicts with an allergy you've flagged above.</p>
+            )}
 
             <h3 style={{ fontFamily: SERIF, fontSize: 22, fontWeight: 400, color: INK, margin: '32px 0 6px' }}>Bone broth — where are we?</h3>
             <p style={{ fontSize: 13, color: INK_SOFT, lineHeight: 1.6, margin: '0 0 12px' }}>
@@ -1841,11 +1860,6 @@ function ProfileScreen({ profile, onBack, onEdit, onStartOver, onEditName, onSet
 /* =============================================================
  * HOME
  * ============================================================= */
-const CHAT_SUGGESTIONS = [
-  { id: 'scan', label: 'What can I make with what\u2019s in my fridge?' },
-  { id: 'meal', label: 'What should I cook tonight?' },
-]
-
 function HomeScreen({ profile, onOpen, onProfile }: { profile: CoachProfile; onOpen: (id: string) => void; onProfile: () => void }) {
   const title = profile.firstName ? `${profile.firstName}'s Collagen Coach` : 'Your Collagen Coach'
   return (
@@ -1890,19 +1904,11 @@ function HomeScreen({ profile, onOpen, onProfile }: { profile: CoachProfile; onO
           }}>↑</span>
         </button>
 
-        {/* Suggestions — plain example questions under the input box, no
-            bullets/markers, just italic prompt-style text you can tap */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'center' }}>
-          {CHAT_SUGGESTIONS.map(s => (
-            <div
-              key={s.id}
-              onClick={() => onOpen(s.id)}
-              style={{ fontFamily: SERIF, fontStyle: 'italic', fontSize: 13.5, color: INK_SOFT, textAlign: 'center', cursor: 'pointer', padding: '2px 4px', lineHeight: 1.3 }}
-            >
-              {s.label}
-            </div>
-          ))}
-        </div>
+        {/* Single descriptive line, not tappable — explains what the coach
+            can do rather than offering distinct action prompts */}
+        <p style={{ fontFamily: SERIF, fontStyle: 'italic', fontSize: 13, color: PINK, fontWeight: 500, lineHeight: 1.4, textAlign: 'left', padding: '2px 4px', margin: 0 }}>
+          Talk to me or send me a picture. I am your pocket collagen coach for food, ingredients, a menu or even the contents of your cupboard and fridge. Inspiration or motivation, I'm here for you x
+        </p>
 
         {/* Track my day — the one genuinely separate feature, kept as its
             own pill button below the shared chat entry point */}
@@ -1989,7 +1995,8 @@ function App() {
   if (screen.kind === 'welcome') return wrap(<WelcomeScreen onNext={() => setScreen({ kind: 'name' })} />)
 
   if (screen.kind === 'name') return wrap(<NameScreen initial={profile.firstName} onNext={name => {
-    const p = { ...profile, firstName: name }
+    const capitalized = name.trim().split(/\s+/).map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ')
+    const p = { ...profile, firstName: capitalized }
     saveProfile(p)
     setProfile(p)
     if (!p.disclaimerAcceptedAt) setScreen({ kind: 'disclaimer' })
