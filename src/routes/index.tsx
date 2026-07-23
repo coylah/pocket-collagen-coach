@@ -1842,9 +1842,8 @@ function ProfileScreen({ profile, onBack, onEdit, onStartOver, onEditName, onSet
  * HOME
  * ============================================================= */
 const CHAT_SUGGESTIONS = [
-  { id: 'scan', label: 'Scan something', sub: 'Fridge, menu, label, shelf, buffet — show me.' },
-  { id: 'meal', label: 'Build a meal', sub: "Tell me what you've got. I'll make it dinner." },
-  { id: 'ask',  label: 'Ask your Coach', sub: 'Food choices, collagen questions, swaps — what would you do?' },
+  { id: 'scan', label: 'What can I make with what\u2019s in my fridge?' },
+  { id: 'meal', label: 'What should I cook tonight?' },
 ]
 
 function HomeScreen({ profile, onOpen, onProfile }: { profile: CoachProfile; onOpen: (id: string) => void; onProfile: () => void }) {
@@ -1891,16 +1890,16 @@ function HomeScreen({ profile, onOpen, onProfile }: { profile: CoachProfile; onO
           }}>↑</span>
         </button>
 
-        {/* Suggestions — plain list items (no button/border wrapper), title
-            styled identically to Track my day's title below for consistency */}
-        <div>
+        {/* Suggestions — plain example questions under the input box, no
+            bullets/markers, just italic prompt-style text you can tap */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'center' }}>
           {CHAT_SUGGESTIONS.map(s => (
-            <div key={s.id} onClick={() => onOpen(s.id)} style={{ display: 'flex', alignItems: 'flex-start', gap: 7, padding: '5px 2px', cursor: 'pointer' }}>
-              <span style={{ color: PINK, fontSize: 11, flexShrink: 0, marginTop: 3 }}>✦</span>
-              <span>
-                <span style={{ fontFamily: SERIF, display: 'block', fontSize: 15, color: PINK, fontWeight: 500, lineHeight: 1.2 }}>{s.label}</span>
-                <span style={{ display: 'block', fontSize: 10.5, color: INK_SOFT, marginTop: 1, lineHeight: 1.25 }}>{s.sub}</span>
-              </span>
+            <div
+              key={s.id}
+              onClick={() => onOpen(s.id)}
+              style={{ fontFamily: SERIF, fontStyle: 'italic', fontSize: 13.5, color: INK_SOFT, textAlign: 'center', cursor: 'pointer', padding: '2px 4px', lineHeight: 1.3 }}
+            >
+              {s.label}
             </div>
           ))}
         </div>
