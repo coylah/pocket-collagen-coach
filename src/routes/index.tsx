@@ -1368,23 +1368,24 @@ function Composer({
           </div>
         )}
         <div style={{
-          display: 'flex', alignItems: 'center', gap: 8, border: `1.5px solid ${LINE}`, borderRadius: 50,
-          padding: '6px 6px 6px 15px', background: '#FFF', boxShadow: '0 2px 8px rgba(0,0,0,0.05)', width: '100%',
+          display: 'flex', alignItems: 'flex-end', gap: 8, border: `1.5px solid ${LINE}`, borderRadius: 26,
+          padding: '10px 6px 10px 15px', background: '#FFF', boxShadow: '0 2px 8px rgba(0,0,0,0.05)', width: '100%',
         }}>
           {mode.photo && (
             <>
               {/* No `capture` attribute — mobile OS shows its own native
                   picker offering both camera and photo library from one tap */}
               <input ref={galleryRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={e => handleFile(e.target.files?.[0])} />
-              <button onClick={() => galleryRef.current?.click()} style={{ background: 'none', border: 'none', color: MUTE, fontSize: 20, flexShrink: 0, cursor: 'pointer', padding: 0, lineHeight: 1 }}>+</button>
+              <button onClick={() => galleryRef.current?.click()} style={{ background: 'none', border: 'none', color: MUTE, fontSize: 20, flexShrink: 0, cursor: 'pointer', padding: 0, lineHeight: 1.6 }}>+</button>
             </>
           )}
-          <input
+          <textarea
             value={input}
             onChange={e => setInput(e.target.value)}
-            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); send() } }}
+            onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
             placeholder={mode.placeholder}
-            style={{ flex: 1, border: 'none', outline: 'none', fontSize: 12, color: INK, fontFamily: SANS, background: 'transparent', minWidth: 0 }}
+            rows={2}
+            style={{ flex: 1, border: 'none', outline: 'none', fontSize: 12, color: INK, fontFamily: SANS, background: 'transparent', resize: 'none', minWidth: 0, lineHeight: 1.4, padding: 0 }}
           />
           <button onClick={send} disabled={!canSend} style={{
             width: 28, height: 28, borderRadius: '50%', border: 'none', flexShrink: 0,
