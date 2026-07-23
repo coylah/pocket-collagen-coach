@@ -1394,12 +1394,12 @@ function Composer({
   )
 }
 
-function ChatScreen({ mode, profile, onBack }: { mode: ChatMode; profile: CoachProfile | null; onBack: () => void }) {
+function ChatScreen({ mode, profile, onBack, pending }: { mode: ChatMode; profile: CoachProfile | null; onBack: () => void; pending?: { input: string; preview: string | null; b64: string | null } }) {
   const [messages, setMessages] = useState<any[]>([])
-  const [input, setInput] = useState('')
+  const [input, setInput] = useState(pending?.input ?? '')
   const [loading, setLoading] = useState(false)
-  const [preview, setPreview] = useState<string | null>(null)
-  const [b64, setB64] = useState<string | null>(null)
+  const [preview, setPreview] = useState<string | null>(pending?.preview ?? null)
+  const [b64, setB64] = useState<string | null>(pending?.b64 ?? null)
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [messages, loading])
@@ -1431,6 +1431,13 @@ function ChatScreen({ mode, profile, onBack }: { mode: ChatMode; profile: CoachP
     }
     setLoading(false)
   }
+
+  // If Home already had a typed message or photo waiting, send it
+  // immediately on arrival — the user shouldn't have to hit send twice.
+  useEffect(() => {
+    if (pending && (pending.input.trim() || pending.b64)) send()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const composer = (
     <Composer
@@ -1860,8 +1867,26 @@ function ProfileScreen({ profile, onBack, onEdit, onStartOver, onEditName, onSet
 /* =============================================================
  * HOME
  * ============================================================= */
-function HomeScreen({ profile, onOpen, onProfile }: { profile: CoachProfile; onOpen: (id: string) => void; onProfile: () => void }) {
+const HOME_COMPOSER_MODE: ChatMode = {
+  id: 'home',
+  title: 'Ask your Coach',
+  subtitle: '',
+  photo: true,
+  placeholder: 'Ask, or send a photo of your fridge, menu, label…',
+  autoPrompt: null,
+}
+
+function HomeScreen({ profile, onOpen, onSend, onProfile }: { profile: CoachProfile; onOpen: (id: string) => void; onSend: (input: string, preview: string | null, b64: string | null) => void; onProfile: () => void }) {
   const title = profile.firstName ? `${profile.firstName}'s Collagen Coach` : 'Your Collagen Coach'
+  const [input, setInput] = useState('')
+  const [preview, setPreview] = useState<string | null>(null)
+  const [b64, setB64] = useState<string | null>(null)
+
+  const send = () => {
+    if (!input.trim() && !b64) return
+    onSend(input, preview, b64)
+  }
+
   return (
     <div style={{ height: '100dvh', overflow: 'hidden', background: '#FFF', display: 'flex', flexDirection: 'column' }}>
       <style>{GLOBAL_CSS}</style>
@@ -1889,20 +1914,24 @@ function HomeScreen({ profile, onOpen, onProfile }: { profile: CoachProfile; onO
           Right, what are we doing today?
         </div>
 
-        {/* Shared input bar — the single entry point Scan/Build/Ask all feed
-            into, ChatGPT-style. Tapping a suggestion below pre-fills this. */}
-        <button onClick={() => onOpen('ask')} style={{
-          display: 'flex', alignItems: 'center', gap: 8, border: `1.5px solid ${LINE}`, borderRadius: 50,
-          padding: '6px 6px 6px 15px', background: '#FFF', boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
-          cursor: 'pointer', textAlign: 'left', width: '100%',
-        }}>
-          <span style={{ color: MUTE, fontSize: 17, flexShrink: 0 }}>+</span>
-          <span style={{ flex: 1, fontSize: 12, color: MUTE }}>Ask your coach anything…</span>
-          <span style={{
-            width: 28, height: 28, borderRadius: '50%', background: PINK, color: '#FFF',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 13,
-          }}>↑</span>
-        </button>
+        {/* The real composer — same component used inside the chat screen
+            itself, with photo/camera/gallery support. Typing and hitting
+            send here takes you straight into the conversation with your
+            message already sent, no separate blank "Ask your Coach" screen
+            to click through first. */}
+        <div style={{ border: `1px solid ${LINE}`, borderRadius: 16, overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
+          <Composer
+            mode={HOME_COMPOSER_MODE}
+            input={input}
+            setInput={setInput}
+            preview={preview}
+            setPreview={setPreview}
+            setB64={setB64}
+            b64={b64}
+            send={send}
+            loading={false}
+          />
+        </div>
 
         {/* Single descriptive line, not tappable — explains what the coach
             can do rather than offering distinct action prompts */}
@@ -1969,7 +1998,7 @@ type Screen =
   | { kind: 'completion' }
   | { kind: 'home' }
   | { kind: 'profile' }
-  | { kind: 'chat'; mode: string }
+  | { kind: 'chat'; mode: string; pending?: { input: string; preview: string | null; b64: string | null } }
   | { kind: 'track' }
 
 function App() {
@@ -2043,14 +2072,15 @@ function App() {
       setScreen({ kind: 'home' })
       return null
     }
-    return wrap(<ChatScreen mode={mode} profile={profile} onBack={() => setScreen({ kind: 'home' })} />)
+    return wrap(<ChatScreen mode={mode} profile={profile} onBack={() => setScreen({ kind: 'home' })} pending={screen.pending} />)
   }
 
   if (screen.kind === 'track') return wrap(<TrackScreen profile={profile} onBack={() => setScreen({ kind: 'home' })} />)
 
   return wrap(<HomeScreen
     profile={profile}
-    onOpen={id => { if (id === 'track') setScreen({ kind: 'track' }); else setScreen({ kind: 'chat', mode: id }) }}
+    onOpen={id => { if (id === 'track') setScreen({ kind: 'track' }) }}
+    onSend={(input, preview, b64) => setScreen({ kind: 'chat', mode: 'ask', pending: { input, preview, b64 } })}
     onProfile={() => setScreen({ kind: 'profile' })}
   />)
 }
