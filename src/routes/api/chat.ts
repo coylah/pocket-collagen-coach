@@ -62,7 +62,9 @@ export const Route = createFileRoute('/api/chat')({
         )
 
         if (!upstream.ok) {
-          return Response.json({ reply: '' })
+          const errText = await upstream.text().catch(() => '')
+          console.error('Gemini upstream error', upstream.status, errText)
+          return Response.json({ reply: `Upstream error ${upstream.status}: ${errText.slice(0, 300)}` })
         }
 
         const data = await upstream.json()
