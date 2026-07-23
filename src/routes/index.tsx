@@ -1499,8 +1499,17 @@ function ChatScreen({ mode, profile, onBack, pending }: { mode: ChatMode; profil
 
   // If Home already had a typed message or photo waiting, send it
   // immediately on arrival — the user shouldn't have to hit send twice.
+  // Guarded with a ref (not just the empty dep array) so this can never
+  // fire more than once even if something upstream causes an extra
+  // invocation — each firing is a real, billable API call, and a prior
+  // version of this guard was accidentally lost in a later merge.
+  const pendingSentRef = useRef(false)
   useEffect(() => {
-    if (pending && (pending.input.trim() || pending.b64)) send()
+    if (pendingSentRef.current) return
+    if (pending && (pending.input.trim() || pending.b64)) {
+      pendingSentRef.current = true
+      send()
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
