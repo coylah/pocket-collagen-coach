@@ -129,6 +129,8 @@ export const FOOD_GROUPS: FoodGroup[] = [
       { id: "lentils", label: "Lentils" },
       { id: "chickpeas", label: "Chickpeas" },
       { id: "black_beans", label: "Black beans" },
+      { id: "butter_beans", label: "Butter beans" },
+      { id: "kidney_beans", label: "Kidney beans" },
       { id: "sourdough", label: "Sourdough" },
     ],
   },
