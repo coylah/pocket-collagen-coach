@@ -145,13 +145,15 @@ If the user regularly eats chicken, don't recommend chicken forever. Occasionall
 
 SCAN CONTEXT
 
-Before analysing any image, determine what type of image it is — a meal, fridge, menu, shelf, label, buffet, shopping basket or child's meal.
+Before analysing any image, determine what type of image it is — a meal, fridge, menu, shelf, label, buffet, shopping basket or child's meal. This classification is a required first step, completed before you draft any part of your reply — never start generating scoring or advice and adjust course partway through.
 
 Each requires a different conversation. Never treat every image the same. If the purpose isn't obvious, ask.
 
 CHILDREN
 
-If an image or question is about a child — recognise that immediately. Explain that children's nutritional needs differ from adult collagen goals. Provide sensible general guidance only. Never present as a paediatric specialist. Recommend a healthcare professional for specific concerns.
+Identify whether an image or question is about a child BEFORE you form any part of your response — not after starting with adult-collagen framing and correcting course once prompted. This check happens first, before any scoring or advice is generated.
+
+Once identified as a child's meal or question: open by naming that shift ("This one's for your little one, so let's think about it differently") rather than giving adult collagen advice first. Explain that children's nutritional needs differ from adult collagen goals. Provide sensible general guidance only. Never present as a paediatric specialist. Recommend a healthcare professional for specific concerns.
 
 MEAL PLANNING
 
@@ -282,6 +284,10 @@ Collagen Score: <whole number>/100
 
 Judge realistic portions. A garnish does not earn the same credit as a proper serving.
 A meaningful protein meal must not receive 0 unless there are genuinely no scoreable ingredients.
+
+CALIBRATION — scores must match real human intuition, not just the raw sum of factors present:
+A standalone sauce, marinade or condiment (teriyaki, sweet chilli, ketchup, mayo) is not a meal. Score it low by default — teens, not high 20s or above — even if it technically contains a trace of a scoreable factor (a pinch of ginger does not lift a sugar-based sauce into "decent" territory). Reserve anything above the low 20s for a sauce that is genuinely built around a real functional ingredient in a meaningful quantity.
+A day containing a poor meal (fast food, a kids' meal with no vegetables, mostly refined carbs) should have its overall score meaningfully pulled down by that meal — do not average generously. If a day is one decent meal and one genuinely poor one, the total should read as "mixed, room to improve," not comfortably mid-range. When in doubt, score closer to what the meal or day would score if a nutritionally sharp friend eyeballed it, not the most charitable technically-defensible number.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 6. MULTI-ITEM IMAGES
@@ -642,8 +648,16 @@ const PREF_META: Record<FoodPref, { label: string; bg: string; fg: string; borde
   not_for_me: { label: 'Not for me', bg: '#FFF',   fg: INK,    border: INK },
 }
 
-function FoodPrefRow({ label, note, why, value, onChange }: { label: string; note?: string; why?: string; value: FoodPref | undefined; onChange: (v: FoodPref) => void }) {
+function FoodPrefRow({ label, note, why, value, onChange, blocked }: { label: string; note?: string; why?: string; value: FoodPref | undefined; onChange: (v: FoodPref) => void; blocked?: string }) {
   const opts: FoodPref[] = ['love', 'like', 'if_it_fits', 'not_for_me']
+  if (blocked) {
+    return (
+      <div style={{ padding: '14px 0', borderBottom: `1px solid ${LINE_SOFT}`, opacity: 0.55 }}>
+        <div style={{ fontSize: 15, fontWeight: 700, color: MUTE, marginBottom: 4 }}>{label}</div>
+        <div style={{ fontSize: 12, color: MUTE, lineHeight: 1.4 }}>Excluded — conflicts with the {blocked} allergy you flagged.</div>
+      </div>
+    )
+  }
   return (
     <div style={{ padding: '14px 0', borderBottom: `1px solid ${LINE_SOFT}` }}>
       <div style={{ fontSize: 15, fontWeight: 700, color: INK, marginBottom: why ? 3 : 8 }}>{label}</div>
@@ -936,6 +950,16 @@ function OnboardingScreen({ initial, onDone, onBack, jumpTo }: { initial: CoachP
 
         {step === 1 && foodIdx > 0 && (() => {
           const g = FOOD_GROUPS[foodIdx - 1]
+          // Only "dairy" and "fish" food groups map cleanly 1:1 onto a
+          // restriction id — every item in each group genuinely is that
+          // allergen, so it's safe to auto-block the whole group. NOT doing
+          // this for "nuts" — that group mixes actual tree nuts (walnuts,
+          // cashews, almonds) with seeds (pumpkin, sunflower, chia) and
+          // tahini (a SESAME allergen, not nuts). Auto-blocking the whole
+          // group would incorrectly flag safe foods — needs per-item
+          // allergen tagging in the data to do this correctly, not a guess.
+          const groupBlocked = ['dairy', 'fish'].includes(g.key) && p.restrictions.includes(g.key)
+          const blockedLabel = groupBlocked ? RESTRICTIONS.find(r => r.id === g.key)?.label : undefined
           return (
             <>
               <div style={{ fontFamily: SANS, fontSize: 10, color: PINK, letterSpacing: '.16em', fontWeight: 600, marginBottom: 6 }}>YOUR FOOD — {foodIdx + 1} / {totalFoodPages}</div>
@@ -945,7 +969,7 @@ function OnboardingScreen({ initial, onDone, onBack, jumpTo }: { initial: CoachP
               <p style={{ fontSize: 12, color: MUTE, lineHeight: 1.6, margin: '0 0 6px', fontStyle: 'italic' }}>Tap how you feel about each — skip anything you don't know.</p>
               <div>
                 {g.foods.map(f => (
-                  <FoodPrefRow key={f.id} label={f.label} note={f.note} why={f.why} value={p.foods[f.id]} onChange={v => patch({ foods: { ...p.foods, [f.id]: v } })} />
+                  <FoodPrefRow key={f.id} label={f.label} note={f.note} why={f.why} value={p.foods[f.id]} onChange={v => patch({ foods: { ...p.foods, [f.id]: v } })} blocked={groupBlocked ? blockedLabel : undefined} />
                 ))}
               </div>
             </>
@@ -1308,7 +1332,7 @@ const CHAT_MODES: Record<string, ChatMode> = {
     photo: true,
     placeholder: 'Anything to add? (optional)',
     starter: "Snap it or upload a photo — I'll take a look and score what's worth eating.",
-    autoPrompt: "Look at this image. Infer what it is (fridge / menu / recipe / label / product / shelf / buffet / meal / single food). If genuinely unclear, ask ONE short question. For a MULTI-ITEM image use the ===OPTIONS=== block with up to 3 individually scored dishes — never a whole-image score. For a single scorable item use the compact meal format with a `Collagen Score: <n>/100` line. For a packaged product, end with ONE contextual next action.",
+    autoPrompt: "Look at this image. Infer what it is (fridge / menu / recipe / label / product / shelf / buffet / meal / single food). If genuinely unclear, ask ONE short question. If it's a FRIDGE and the user is asking for meal ideas (not just scoring individual visible items), do NOT propose a meal built only from what's visible — first ask ONE short question to establish context, e.g. whether this is literally everything they've got, whether there are freezer or cupboard staples too, or whether they're happy to grab a couple of things from the shops. Only build meal suggestions once you have that context, or once the user has said this is genuinely all they've got. For a MULTI-ITEM image use the ===OPTIONS=== block with up to 3 individually scored dishes — never a whole-image score. For a single scorable item use the compact meal format with a `Collagen Score: <n>/100` line. For a packaged product, end with ONE contextual next action.",
   },
   meal: {
     id: 'meal',
