@@ -1333,7 +1333,7 @@ const CHAT_MODES: Record<string, ChatMode> = {
 }
 
 function Composer({
-  mode, input, setInput, preview, setPreview, setB64, b64, send, loading,
+  mode, input, setInput, preview, setPreview, setB64, b64, send, loading, variant = 'default',
 }: {
   mode: ChatMode
   input: string
@@ -1344,6 +1344,7 @@ function Composer({
   b64: string | null
   send: () => void
   loading: boolean
+  variant?: 'default' | 'pill'
 }) {
   const cameraRef = useRef<HTMLInputElement>(null)
   const galleryRef = useRef<HTMLInputElement>(null)
@@ -1354,6 +1355,45 @@ function Composer({
     const r = new FileReader()
     r.onload = e => setB64((e.target?.result as string).split(',')[1])
     r.readAsDataURL(file)
+  }
+
+  if (variant === 'pill') {
+    const canSend = !loading && (input.trim() || b64)
+    return (
+      <div>
+        {preview && (
+          <div style={{ position: 'relative', display: 'inline-block', marginBottom: 8 }}>
+            <img src={preview} alt="preview" style={{ height: 60, borderRadius: 8, border: `1px solid ${LINE}` }} />
+            <button onClick={() => { setPreview(null); setB64(null) }} style={{ position: 'absolute', top: -6, right: -6, background: INK, border: 'none', borderRadius: '50%', width: 22, height: 22, color: '#FFF', fontSize: 11, cursor: 'pointer' }}>✕</button>
+          </div>
+        )}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 8, border: `1.5px solid ${LINE}`, borderRadius: 50,
+          padding: '6px 6px 6px 15px', background: '#FFF', boxShadow: '0 2px 8px rgba(0,0,0,0.05)', width: '100%',
+        }}>
+          {mode.photo && (
+            <>
+              {/* No `capture` attribute — mobile OS shows its own native
+                  picker offering both camera and photo library from one tap */}
+              <input ref={galleryRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={e => handleFile(e.target.files?.[0])} />
+              <button onClick={() => galleryRef.current?.click()} style={{ background: 'none', border: 'none', color: MUTE, fontSize: 20, flexShrink: 0, cursor: 'pointer', padding: 0, lineHeight: 1 }}>+</button>
+            </>
+          )}
+          <input
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); send() } }}
+            placeholder={mode.placeholder}
+            style={{ flex: 1, border: 'none', outline: 'none', fontSize: 12, color: INK, fontFamily: SANS, background: 'transparent', minWidth: 0 }}
+          />
+          <button onClick={send} disabled={!canSend} style={{
+            width: 28, height: 28, borderRadius: '50%', border: 'none', flexShrink: 0,
+            background: canSend ? PINK : '#D8D2CE', color: '#FFF', fontSize: 13, cursor: canSend ? 'pointer' : 'not-allowed',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>↑</button>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -1919,25 +1959,18 @@ function HomeScreen({ profile, onOpen, onSend, onProfile }: { profile: CoachProf
             send here takes you straight into the conversation with your
             message already sent, no separate blank "Ask your Coach" screen
             to click through first. */}
-        <div style={{ border: `1px solid ${LINE}`, borderRadius: 16, overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
-          <Composer
-            mode={HOME_COMPOSER_MODE}
-            input={input}
-            setInput={setInput}
-            preview={preview}
-            setPreview={setPreview}
-            setB64={setB64}
-            b64={b64}
-            send={send}
-            loading={false}
-          />
-        </div>
-
-        {/* Single descriptive line, not tappable — explains what the coach
-            can do rather than offering distinct action prompts */}
-        <p style={{ fontFamily: SERIF, fontStyle: 'italic', fontSize: 13, color: PINK, fontWeight: 500, lineHeight: 1.4, textAlign: 'left', padding: '2px 4px', margin: 0 }}>
-          Talk to me or send me a picture. I am your pocket collagen coach for food, ingredients, a menu or even the contents of your cupboard and fridge. Inspiration or motivation, I'm here for you x
-        </p>
+        <Composer
+          mode={HOME_COMPOSER_MODE}
+          input={input}
+          setInput={setInput}
+          preview={preview}
+          setPreview={setPreview}
+          setB64={setB64}
+          b64={b64}
+          send={send}
+          loading={false}
+          variant="pill"
+        />
 
         {/* Track my day — the one genuinely separate feature, kept as its
             own pill button below the shared chat entry point */}
