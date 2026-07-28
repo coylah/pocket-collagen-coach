@@ -3,7 +3,7 @@ import { useState, useRef, useEffect, type ReactNode } from 'react'
 import { formatAiResponse } from '../utils/formatAiResponse'
 import {
   FOOD_GROUPS, FOOD_LABEL, RESTRICTIONS, COOK_TIME, STYLE_OPTIONS, USUALS,
-  MILK_OPTIONS, BONE_BROTH_OPTIONS, FRUIT_FLAGS,
+  MILK_OPTIONS, BONE_BROTH_OPTIONS,
   EMPTY_PROFILE, type CoachProfile, type FoodPref, type FoodLog, type TextSize,
 } from '../data/matrixFoods'
 
@@ -509,10 +509,6 @@ const buildProfileBlock = (p: CoachProfile | null) => {
     ? "no preference — pick whichever fits"
     : p.milks.map(id => MILK_OPTIONS.find(o => o.id === id)?.label).filter(Boolean).join(', ')
   const broth = BONE_BROTH_OPTIONS.find(o => o.id === p.boneBroth)?.label || ''
-  const fruitTxt = p.fruitFlags.includes('none') ? 'no strong opinions'
-    : p.fruitFlags.includes('not_a_fruit_person')
-      ? 'not really a fruit person'
-      : p.fruitFlags.map(id => FRUIT_FLAGS.find(o => o.id === id)?.label).filter(Boolean).join(', ')
   const love = bySet('love'), like = bySet('like'), iff = bySet('if_it_fits'), no = bySet('not_for_me')
   const out: string[] = ['\n\nPERSISTENT PROFILE (invisible to user; use silently):']
   if (p.firstName) out.push(`FIRST NAME: ${p.firstName}`)
@@ -521,7 +517,6 @@ const buildProfileBlock = (p: CoachProfile | null) => {
   if (styleTxt) out.push(`STYLE: ${styleTxt}`)
   if (milkTxt) out.push(`MILKS (any of these are fine): ${milkTxt}`)
   if (broth) out.push(`BONE BROTH: ${broth}`)
-  if (fruitTxt) out.push(`FRUIT: ${fruitTxt}`)
   if (usualsTxt) out.push(`USUALS (favour but still list in recipes): ${usualsTxt}`)
   if (love.length) out.push(`LOVE: ${love.join(', ')}`)
   if (like.length) out.push(`LIKE: ${like.join(', ')}`)
@@ -803,7 +798,7 @@ function OnboardingScreen({ initial, onDone, onBack, jumpTo }: { initial: CoachP
   const [p, setP] = useState<CoachProfile>(initial)
   const [step, setStep] = useState<OnbStep>(jumpTo ?? 0)
   const [foodIdx, setFoodIdx] = useState(0)
-  const totalFoodPages = FOOD_GROUPS.length + 1
+  const totalFoodPages = FOOD_GROUPS.length
 
   const patch = (x: Partial<CoachProfile>) => setP(prev => {
     const n = { ...prev, ...x }
@@ -846,15 +841,6 @@ function OnboardingScreen({ initial, onDone, onBack, jumpTo }: { initial: CoachP
     if (blockedMilks.includes(id)) return
     const cur = p.milks.filter(m => m !== 'any')
     patch({ milks: cur.includes(id) ? cur.filter(m => m !== id) : [...cur, id] })
-  }
-
-  const toggleFruit = (id: string) => {
-    if (id === 'none') {
-      patch({ fruitFlags: p.fruitFlags.includes('none') ? [] : ['none'] })
-      return
-    }
-    const cur = p.fruitFlags.filter(m => m !== 'none')
-    patch({ fruitFlags: cur.includes(id) ? cur.filter(m => m !== id) : [...cur, id] })
   }
 
   const next = () => {
@@ -934,32 +920,16 @@ function OnboardingScreen({ initial, onDone, onBack, jumpTo }: { initial: CoachP
           </>
         )}
 
-        {step === 1 && foodIdx === 0 && (
-          <>
-            <div style={{ fontFamily: SANS, fontSize: 10, color: PINK, letterSpacing: '.16em', fontWeight: 600, marginBottom: 6 }}>YOUR FOOD — 1 / {totalFoodPages}</div>
-            <h2 style={{ fontFamily: SERIF, fontSize: 27, fontWeight: 400, color: INK, margin: '0 0 8px', letterSpacing: '-.01em' }}>Fruit — any strong opinions? <span style={{ color: PINK }}>✦</span></h2>
-            <div style={{ display: 'inline-block', padding: '4px 11px', background: 'rgba(201,72,91,0.1)', border: '1px solid rgba(201,72,91,0.25)', borderRadius: 50, fontFamily: SANS, fontSize: 10, letterSpacing: '.1em', fontWeight: 600, textTransform: 'uppercase', color: PINK, marginBottom: 10 }}>Activate + Protect ✦</div>
-            <p style={{ fontSize: 14, color: INK_SOFT, lineHeight: 1.6, margin: '0 0 14px' }}>Most fruit is easy enough to work around. Just tell me if there are any stronger flavours or useful Matrix foods you're funny about.</p>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-              {FRUIT_FLAGS.map(o => (
-                <Chip key={o.id} selected={p.fruitFlags.includes(o.id)} onClick={() => toggleFruit(o.id)}>{o.label}</Chip>
-              ))}
-            </div>
-          </>
-        )}
-
-        {step === 1 && foodIdx > 0 && (() => {
-          const g = FOOD_GROUPS[foodIdx - 1]
-          // Only "dairy" and "fish" food groups map cleanly 1:1 onto a
-          // restriction id — every item in each group genuinely is that
-          // allergen, so it's safe to auto-block the whole group. NOT doing
-          // this for "nuts" — that group mixes actual tree nuts (walnuts,
-          // cashews, almonds) with seeds (pumpkin, sunflower, chia) and
-          // tahini (a SESAME allergen, not nuts). Auto-blocking the whole
-          // group would incorrectly flag safe foods — needs per-item
-          // allergen tagging in the data to do this correctly, not a guess.
+        {step === 1 && (() => {
+          const g = FOOD_GROUPS[foodIdx]
+          // Two ways an item can be blocked: (1) the whole group maps 1:1
+          // onto a restriction — safe for "dairy" and "fish" where every
+          // item genuinely is that allergen; or (2) the item itself carries
+          // an explicit allergen tag, which is what "nuts" now uses since
+          // that group mixes real tree nuts with safe seeds and a sesame
+          // item (tahini) that needed separating out correctly.
           const groupBlocked = ['dairy', 'fish'].includes(g.key) && p.restrictions.includes(g.key)
-          const blockedLabel = groupBlocked ? RESTRICTIONS.find(r => r.id === g.key)?.label : undefined
+          const groupBlockedLabel = groupBlocked ? RESTRICTIONS.find(r => r.id === g.key)?.label : undefined
           return (
             <>
               <div style={{ fontFamily: SANS, fontSize: 10, color: PINK, letterSpacing: '.16em', fontWeight: 600, marginBottom: 6 }}>YOUR FOOD — {foodIdx + 1} / {totalFoodPages}</div>
@@ -968,9 +938,12 @@ function OnboardingScreen({ initial, onDone, onBack, jumpTo }: { initial: CoachP
               <p style={{ fontSize: 13, color: INK_SOFT, lineHeight: 1.6, margin: '0 0 8px' }}>{g.why}</p>
               <p style={{ fontSize: 12, color: MUTE, lineHeight: 1.6, margin: '0 0 6px', fontStyle: 'italic' }}>Tap how you feel about each — skip anything you don't know.</p>
               <div>
-                {g.foods.map(f => (
-                  <FoodPrefRow key={f.id} label={f.label} note={f.note} why={f.why} value={p.foods[f.id]} onChange={v => patch({ foods: { ...p.foods, [f.id]: v } })} blocked={groupBlocked ? blockedLabel : undefined} />
-                ))}
+                {g.foods.map(f => {
+                  const itemBlocked = f.allergen && p.restrictions.includes(f.allergen)
+                  const itemBlockedLabel = itemBlocked ? RESTRICTIONS.find(r => r.id === f.allergen)?.label : undefined
+                  const blocked = groupBlocked ? groupBlockedLabel : itemBlockedLabel
+                  return <FoodPrefRow key={f.id} label={f.label} note={f.note} why={f.why} value={p.foods[f.id]} onChange={v => patch({ foods: { ...p.foods, [f.id]: v } })} blocked={blocked} />
+                })}
               </div>
             </>
           )
