@@ -2108,7 +2108,12 @@ function App() {
       setProfile(p)
     }}
     onStartOver={() => {
-      const fresh: CoachProfile = { ...EMPTY_PROFILE, disclaimerAcceptedAt: profile.disclaimerAcceptedAt, version: 7 }
+      const fresh: CoachProfile = { ...EMPTY_PROFILE, version: 7 }
+      try {
+        localStorage.removeItem(LOG_KEY)
+        localStorage.removeItem(PROFILE_KEY)
+        ;['pcc_profile_v6', 'pcc_profile_v5', 'pcc_profile_v4'].forEach(k => localStorage.removeItem(k))
+      } catch {}
       saveProfile(fresh)
       setProfile(fresh)
       setScreen({ kind: 'welcome' })
