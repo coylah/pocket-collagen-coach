@@ -1911,10 +1911,13 @@ function ProfileScreen({ profile, onBack, onEdit, onStartOver, onEditName, onSet
           </div>
         </div>
 
-        <button onClick={() => { if (confirm('Start from scratch? This clears what your Coach has learnt about your food and preferences.')) onStartOver() }} style={{
-          width: '100%', marginTop: 20, background: '#FFF', border: `1.5px dashed ${LINE}`, borderRadius: 16,
-          padding: '14px 18px', fontSize: 13, fontWeight: 700, color: MUTE, cursor: 'pointer',
-        }}>Start over</button>
+        <button onClick={() => { if (confirm('Reset everything? This clears your name, food preferences and your food log, and starts onboarding again.')) onStartOver() }} style={{
+          width: '100%', marginTop: 20, background: '#FFF', border: `1.5px solid ${PINK}`, borderRadius: 16,
+          padding: '14px 18px', fontSize: 14, fontWeight: 800, color: PINK, cursor: 'pointer',
+        }}>Reset everything &amp; start fresh</button>
+        <div style={{ fontSize: 11.5, color: MUTE, textAlign: 'center', marginTop: 8 }}>
+          Clears your profile, preferences and food log on this device.
+        </div>
       </main>
     </div>
   )
