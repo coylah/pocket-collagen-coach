@@ -22,6 +22,10 @@ export interface FoodItem {
   label: string;
   note?: string;
   why?: string;
+  // Optional: ties this specific item to a RESTRICTIONS id for allergy
+  // blocking. Only set where the allergen genuinely applies — e.g. seeds
+  // in the "nuts" group are NOT tree nuts and should not be tagged "nuts".
+  allergen?: string;
 }
 
 export interface FoodGroup {
@@ -148,15 +152,16 @@ export const FOOD_GROUPS: FoodGroup[] = [
       { id: "sunflower_seeds", label: "Sunflower seeds" },
       { id: "chia_seeds", label: "Chia seeds" },
       { id: "flaxseed", label: "Flaxseed" },
-      { id: "walnuts", label: "Walnuts" },
-      { id: "cashews", label: "Cashews" },
-      { id: "almonds", label: "Almonds" },
+      { id: "walnuts", label: "Walnuts", allergen: "nuts" },
+      { id: "cashews", label: "Cashews", allergen: "nuts" },
+      { id: "almonds", label: "Almonds", allergen: "nuts" },
       {
         id: "brazil_nuts",
         label: "Brazil nuts",
         why: "Very selenium-rich — more is not automatically better.",
+        allergen: "nuts",
       },
-      { id: "tahini", label: "Tahini" },
+      { id: "tahini", label: "Tahini", allergen: "sesame" },
     ],
   },
   {
@@ -265,17 +270,6 @@ export const BONE_BROTH_OPTIONS: Opt[] = [
   { id: "no", label: "Not for me" },
 ];
 
-export const FRUIT_FLAGS: Opt[] = [
-  { id: "grapefruit", label: "Grapefruit" },
-  { id: "kiwi", label: "Kiwi" },
-  { id: "blackcurrants", label: "Blackcurrants" },
-  { id: "guava", label: "Guava" },
-  { id: "mango", label: "Mango" },
-  { id: "citrus", label: "Citrus" },
-  { id: "not_a_fruit_person", label: "I'm not really a fruit person" },
-  { id: "none", label: "No strong opinions" },
-];
-
 export interface CoachProfile {
   version: 7;
   completed: boolean;
@@ -291,7 +285,6 @@ export interface CoachProfile {
   usualsCustom: string;
   milks: string[];
   boneBroth: string | null;
-  fruitFlags: string[];
   textSize: TextSize;
 }
 
@@ -310,7 +303,6 @@ export const EMPTY_PROFILE: CoachProfile = {
   usualsCustom: "",
   milks: [],
   boneBroth: null,
-  fruitFlags: [],
   textSize: "standard",
 };
 
