@@ -637,10 +637,10 @@ function BrandMark({ small }: { small?: boolean }) {
 }
 
 const PREF_META: Record<FoodPref, { label: string; bg: string; fg: string; border: string }> = {
-  love:       { label: 'Love',       bg: PINK,     fg: '#FFF', border: PINK },
-  like:       { label: 'Like',       bg: BABY,     fg: INK,    border: PINK_DEEP },
-  if_it_fits: { label: 'If it fits', bg: INK_SOFT, fg: '#FFF', border: INK },
-  not_for_me: { label: 'Not for me', bg: '#FFF',   fg: INK,    border: INK },
+  love:       { label: 'Absolute fave 🤩', bg: PINK,     fg: '#FFF', border: PINK },
+  like:       { label: 'Love it ❤️',       bg: BABY,     fg: PINK,   border: PINK },
+  if_it_fits: { label: 'If it works 🤷',   bg: LINE_SOFT, fg: INK,   border: LINE },
+  not_for_me: { label: 'Sick in my mouth 🤢', bg: '#FFF', fg: MUTE,  border: LINE },
 }
 
 function FoodPrefRow({ label, note, why, value, onChange, blocked }: { label: string; note?: string; why?: string; value: FoodPref | undefined; onChange: (v: FoodPref) => void; blocked?: string }) {
