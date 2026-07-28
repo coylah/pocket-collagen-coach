@@ -951,21 +951,30 @@ function OnboardingScreen({ initial, onDone, onBack, jumpTo }: { initial: CoachP
 
         {step === 2 && (
           <>
-            <h2 style={{ fontFamily: SERIF, fontSize: 26, fontWeight: 700, color: INK, margin: '0 0 6px', letterSpacing: '-.01em' }}>On a normal night, how long are we cooking?</h2>
+            <h2 style={{ fontFamily: SERIF, fontSize: 27, fontWeight: 400, color: INK, margin: '0 0 6px', letterSpacing: '-.01em' }}>On a normal night, how long are we cooking? <span style={{ color: PINK }}>✦</span></h2>
             <p style={{ fontSize: 14, color: INK_SOFT, lineHeight: 1.6, margin: '0 0 16px' }}>I'll respect this. No 40-minute recipes if you said 15.</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 28 }}>
               {COOK_TIME.map(o => {
                 const a = p.cookTime === o.id
                 return <button key={o.id} onClick={() => patch({ cookTime: o.id })} style={{
-                  textAlign: 'left', padding: '14px 16px', borderRadius: 14, border: `1.5px solid ${a ? INK : LINE}`,
-                  background: a ? INK : '#FFF', color: a ? '#FFF' : INK, fontSize: 15, fontWeight: a ? 700 : 600, cursor: 'pointer',
+                  textAlign: 'left', padding: '14px 16px', borderRadius: 14, border: `1.5px solid ${a ? PINK : LINE}`,
+                  background: a ? PINK : '#FFF', color: a ? '#FFF' : INK, fontFamily: SANS, fontSize: 15, fontWeight: a ? 600 : 500, cursor: 'pointer',
+                  boxShadow: a ? '0 2px 8px rgba(201,72,91,0.25)' : 'none',
                 }}>{a ? '✓ ' : ''}{o.label}</button>
               })}
             </div>
-            <h3 style={{ fontFamily: SERIF, fontSize: 22, fontWeight: 700, color: INK, margin: '0 0 6px' }}>What sounds like you?</h3>
-            <p style={{ fontSize: 13, color: INK_SOFT, margin: '0 0 14px' }}>Pick as many as you like.</p>
+            <h3 style={{ fontFamily: SERIF, fontSize: 22, fontWeight: 400, color: INK, margin: '0 0 6px' }}>Anything else I should know about how you cook?</h3>
+            <p style={{ fontSize: 13, color: INK_SOFT, margin: '0 0 14px' }}>Pick as many as apply.</p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-              {STYLE_OPTIONS.map(o => (
+              {[
+                { id: 'minimal',     label: 'Minimal effort is ideal' },
+                { id: 'batch',       label: 'I love batch cooking' },
+                { id: 'cook_others', label: "I'm usually cooking for other people too" },
+                { id: 'on_go',       label: 'I eat out or grab food on the go a lot' },
+                { id: 'spice_bit',   label: 'I like a bit of spice' },
+                { id: 'spice_max',   label: 'The hotter the better' },
+                { id: 'depends',     label: 'Depends on the day — ask me' },
+              ].map(o => (
                 <Chip key={o.id} selected={p.style.includes(o.id)} onClick={() => toggleArr('style', o.id)}>{o.label}</Chip>
               ))}
             </div>
