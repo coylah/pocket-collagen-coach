@@ -19,7 +19,7 @@ export const Route = createFileRoute('/api/webhooks/systeme')({
     handlers: {
       POST: async ({ request }: { request: Request }) => {
         const SUPABASE_URL = process.env.SUPABASE_URL!
-        const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY!
+        const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!
         const WEBHOOK_SECRET = process.env.SYSTEME_WEBHOOK_SECRET!
 
         // 1. Verify the request is genuinely from Systeme.io
