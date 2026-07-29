@@ -2098,11 +2098,24 @@ function App() {
   const [screen, setScreen] = useState<Screen>({ kind: 'loading' })
   const [authReady, setAuthReady] = useState(false)
   const [loggedIn, setLoggedIn] = useState(false)
+  // Dev bypass: skip the login screen inside the Lovable editor/preview only.
+  const [devBypass, setDevBypass] = useState(false)
 
   // Check whether the user has a valid Supabase session.
   // This runs once on mount, then listens for auth state changes
   // (e.g. magic link click in email → auto-login in app).
   useEffect(() => {
+    const host = typeof window !== 'undefined' ? window.location.hostname : ''
+    const isDevHost =
+      host.includes('lovableproject.com') ||
+      host.includes('lovable.dev') ||
+      host === 'localhost' ||
+      host === '127.0.0.1'
+    if (isDevHost) {
+      setDevBypass(true)
+      setAuthReady(true)
+      return
+    }
     supabase.auth.getSession().then(({ data }) => {
       setLoggedIn(!!data.session)
       setAuthReady(true)
@@ -2114,7 +2127,7 @@ function App() {
   }, [])
 
   useEffect(() => {
-    if (!authReady || !loggedIn) return
+    if (!authReady || (!loggedIn && !devBypass)) return
     const p = loadProfile()
     setProfile(p)
     if (!p.firstName && !p.disclaimerAcceptedAt) setScreen({ kind: 'welcome' })
@@ -2122,13 +2135,13 @@ function App() {
     else if (!p.disclaimerAcceptedAt) setScreen({ kind: 'disclaimer' })
     else if (!p.completed) setScreen({ kind: 'onboarding' })
     else setScreen({ kind: 'home' })
-  }, [authReady, loggedIn])
+  }, [authReady, loggedIn, devBypass])
 
   // Not ready yet — show blank screen (avoids flash of login screen)
   if (!authReady) return <div style={{ minHeight: '100dvh', background: '#FFF' }} />
 
   // Not logged in — show login screen
-  if (!loggedIn) return <LoginScreen />
+  if (!loggedIn && !devBypass) return <LoginScreen />
 
   if (screen.kind === 'loading' || !profile) return <div style={{ minHeight: '100dvh', background: '#FFF' }} />
 
