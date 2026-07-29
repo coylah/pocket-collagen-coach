@@ -6,6 +6,25 @@ import {
   MILK_OPTIONS, BONE_BROTH_OPTIONS,
   EMPTY_PROFILE, type CoachProfile, type FoodPref, type FoodLog, type TextSize,
 } from '../data/matrixFoods'
+import { supabase } from '@/integrations/supabase/client'
+import LoginScreen from '@/components/ui/LoginScreen'
+
+// Gets the current Supabase session token for authenticated API calls.
+// Defined at module level so every component/function in this file can use it.
+async function getAuthHeaders(): Promise<Record<string, string>> {
+  const { createClient } = await import('@supabase/supabase-js')
+  const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || ''
+  const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || ''
+  if (!SUPABASE_URL || !SUPABASE_KEY) return { 'Content-Type': 'application/json' }
+  const client = createClient(SUPABASE_URL, SUPABASE_KEY, {
+    auth: { storage: typeof window !== 'undefined' ? localStorage : undefined, persistSession: true, autoRefreshToken: true }
+  })
+  const { data } = await client.auth.getSession()
+  const token = data.session?.access_token
+  return token
+    ? { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
+    : { 'Content-Type': 'application/json' }
+}
 
 export const Route = createFileRoute('/')({ component: App })
 
@@ -179,6 +198,8 @@ When appropriate, ask one thoughtful follow-up question rather than trying to so
 
 The conversation should feel like an ongoing chat, not a finished report.
 
+NEVER contradict the cookbook. If a user references The Collagen Kitchen cookbook, treat it as ground truth. The cookbook demonstrates that 100-scoring meals are achievable with regular supermarket ingredients in normal cooking time — do not suggest otherwise. If your recipe scores lower than 100, explain specifically what's missing, not why 100 is unrealistic or requires specialist ingredients. It doesn't.
+
 THE FEELING TO PROTECT
 
 Every reply should leave the user feeling:
@@ -205,9 +226,10 @@ Default length:
 Use contractions. Keep sentences short. Vary your openings.
 
 The user's name:
-- You may open with the name once — warmly, naturally.
-- After that use it sparingly. Not every message. Not every paragraph.
-- Never use it as filler.
+- You may use it ONCE in the entire conversation — the very first message only, as a warm opener.
+- After that: never again. Not once. Not "sparingly". Zero times.
+- If you catch yourself about to write their name mid-conversation, stop and rewrite the sentence without it.
+- Using the name repeatedly is the single most obvious tell that you are an AI. Do not do it.
 
 Avoid:
 - long apologies
@@ -362,7 +384,7 @@ When the user has chosen a recipe, use exactly:
 name: <recipe name>
 time: <realistic total time>
 serves: <number>
-score: <whole number 0-100>
+score: <whole number only, e.g. 72 — no /100 suffix, just the number>
 intro: <one useful sentence, maximum 18 words>
 ingredients:
 - <ingredient with realistic UK quantity>
@@ -1051,6 +1073,24 @@ function CompletionScreen({ profile, onEnter }: { profile: CoachProfile; onEnter
             <div style={{ fontSize: 13, color: INK_SOFT, lineHeight: 1.55 }}>{c.s}</div>
           </div>
         ))}
+
+        <div style={{ marginTop: 24, borderTop: `1px solid ${LINE}`, paddingTop: 20 }}>
+          <div style={{ fontFamily: SCRIPT, color: PINK, fontSize: 18, marginBottom: 10 }}>How to get the most from me ✦</div>
+          {[
+            { emoji: '📸', title: 'Send a photo', body: "Snap your fridge, a menu, a food label, or a shelf. I'll tell you what's worth eating and why." },
+            { emoji: '💬', title: 'Just ask', body: "Tell me what you've got, what you fancy, or what you're trying to avoid today. No specific format needed." },
+            { emoji: '📋', title: 'Track your day', body: "Tell me what you've eaten and I'll score it against the Collagen Matrix and show you what to add tomorrow." },
+            { emoji: '🔄', title: 'Update your preferences anytime', body: "Tap 'Update my preferences' on the home screen whenever your situation changes." },
+          ].map(tip => (
+            <div key={tip.title} style={{ display: 'flex', gap: 12, marginBottom: 14 }}>
+              <span style={{ fontSize: 22, flexShrink: 0 }}>{tip.emoji}</span>
+              <div>
+                <div style={{ fontFamily: SERIF, fontSize: 15, fontWeight: 500, color: INK, marginBottom: 2 }}>{tip.title}</div>
+                <div style={{ fontSize: 12.5, color: INK_SOFT, lineHeight: 1.5 }}>{tip.body}</div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
       <footer style={{ padding: '14px 20px calc(28px + env(safe-area-inset-bottom))', display: 'flex', background: '#FFF' }}>
         <PrimaryBtn onClick={onEnter}>Meet my Coach →</PrimaryBtn>
@@ -1092,7 +1132,7 @@ function parseRecipe(txt: string): { before: string; recipe: ParsedRecipe | null
       name: get('name') || 'Recipe',
       time: get('time'),
       serves: get('serves'),
-      score: Number(get('score')) || 0,
+      score: Number(get('score').replace(/\/\s*100/, '').trim()) || 0,
       intro: get('intro'),
       ingredients: section('ingredients', ['method', 'why', 'tip', 'boost']),
       method: section('method', ['why', 'tip', 'boost']),
@@ -1331,7 +1371,7 @@ const CHAT_MODES: Record<string, ChatMode> = {
     title: 'Ask your Coach',
     subtitle: 'Food choices, collagen questions, swaps — what would you do?',
     photo: false,
-    placeholder: "e.g. Improve my dinner, what am I missing today, or what would you order?",
+    placeholder: "Ask me anything…",
     starter: "Fire away. Food, collagen, swaps, eating out, chaotic fridge situations — whatever you need.",
     autoPrompt: null,
     extraSystem: "User may ask anything, including multi-day plans. Use MULTI-DAY PLAN format when asked. Do not force scores onto general knowledge or how-to answers.",
@@ -1467,7 +1507,7 @@ function ChatScreen({ mode, profile, onBack, pending }: { mode: ChatMode; profil
       const system = CORE_BRAIN + (mode.extraSystem ? `\n\nMODE: ${mode.extraSystem}` : '') + buildProfileBlock(profile)
       const res = await fetch('/api/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: await getAuthHeaders(),
         body: JSON.stringify({ system, messages: updated.map(m => ({ role: m.role, content: m.content })) }),
       })
       const data = await res.json()
@@ -1685,7 +1725,7 @@ Rules:
     try {
       const res = await fetch('/api/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: await getAuthHeaders(),
         body: JSON.stringify({ system: CORE_BRAIN + buildProfileBlock(profile), messages: [{ role: 'user', content: [{ type: 'text', text: prompt }] }] }),
       })
       const data = await res.json()
@@ -1704,7 +1744,7 @@ Rules:
     try {
       const res = await fetch('/api/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: await getAuthHeaders(),
         body: JSON.stringify({ system: CORE_BRAIN + buildProfileBlock(profile), messages: [{ role: 'user', content: [{ type: 'text', text: prompt }] }] }),
       })
       const data = await res.json()
@@ -1931,7 +1971,7 @@ const HOME_COMPOSER_MODE: ChatMode = {
   title: 'Ask your Coach',
   subtitle: '',
   photo: true,
-  placeholder: 'Ask, or send a photo of your fridge, menu, label…',
+  placeholder: 'Type or send a photo…',
   autoPrompt: null,
 }
 
@@ -2056,8 +2096,25 @@ type Screen =
 function App() {
   const [profile, setProfile] = useState<CoachProfile | null>(null)
   const [screen, setScreen] = useState<Screen>({ kind: 'loading' })
+  const [authReady, setAuthReady] = useState(false)
+  const [loggedIn, setLoggedIn] = useState(false)
+
+  // Check whether the user has a valid Supabase session.
+  // This runs once on mount, then listens for auth state changes
+  // (e.g. magic link click in email → auto-login in app).
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setLoggedIn(!!data.session)
+      setAuthReady(true)
+    })
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setLoggedIn(!!session)
+    })
+    return () => listener.subscription.unsubscribe()
+  }, [])
 
   useEffect(() => {
+    if (!authReady || !loggedIn) return
     const p = loadProfile()
     setProfile(p)
     if (!p.firstName && !p.disclaimerAcceptedAt) setScreen({ kind: 'welcome' })
@@ -2065,7 +2122,13 @@ function App() {
     else if (!p.disclaimerAcceptedAt) setScreen({ kind: 'disclaimer' })
     else if (!p.completed) setScreen({ kind: 'onboarding' })
     else setScreen({ kind: 'home' })
-  }, [])
+  }, [authReady, loggedIn])
+
+  // Not ready yet — show blank screen (avoids flash of login screen)
+  if (!authReady) return <div style={{ minHeight: '100dvh', background: '#FFF' }} />
+
+  // Not logged in — show login screen
+  if (!loggedIn) return <LoginScreen />
 
   if (screen.kind === 'loading' || !profile) return <div style={{ minHeight: '100dvh', background: '#FFF' }} />
 
