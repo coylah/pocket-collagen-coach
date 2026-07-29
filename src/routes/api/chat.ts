@@ -23,6 +23,27 @@ export const Route = createFileRoute('/api/chat')({
     handlers: {
       POST: async ({ request }) => {
 
+        // Auth check — verify the user has a valid Supabase session token.
+        // The client sends the session access_token in the Authorization header.
+        const authHeader = request.headers.get('authorization')
+        const token = authHeader?.replace('Bearer ', '')
+        if (!token) {
+          return Response.json({ reply: 'Access denied' }, { status: 401 })
+        }
+
+        const SUPABASE_URL = process.env.SUPABASE_URL
+        const SUPABASE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY
+        if (SUPABASE_URL && SUPABASE_KEY) {
+          const { createClient } = await import('@supabase/supabase-js')
+          const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
+            auth: { autoRefreshToken: false, persistSession: false }
+          })
+          const { data, error } = await supabase.auth.getUser(token)
+          if (error || !data?.user) {
+            return Response.json({ reply: 'Access denied' }, { status: 401 })
+          }
+        }
+
         const apiKey = process.env.GEMINI_API_KEY
         if (!apiKey) {
           return Response.json({ reply: 'AI not configured' })
@@ -45,7 +66,7 @@ export const Route = createFileRoute('/api/chat')({
         }))
 
         const upstream = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`,
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent`,
           {
             method: 'POST',
             headers: {
