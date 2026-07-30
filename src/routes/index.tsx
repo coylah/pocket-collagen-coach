@@ -1999,25 +1999,42 @@ function HomeScreen({ profile, onOpen, onSend, onProfile }: { profile: CoachProf
         </button>
       </nav>
 
-      {/* Title stands alone in its own centred block, THEN the rule — the
-          tagline moved down to sit directly above the input bar instead */}
-      <section style={{ flex: '0 1 auto', minHeight: 70, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '4px 20px', textAlign: 'center' }}>
-        <h1 style={{ fontFamily: SERIF, fontSize: 28, fontWeight: 400, color: INK, margin: 0, letterSpacing: '-.01em', lineHeight: 1.1 }}>
+      {/* Title + rule */}
+      <section style={{ flexShrink: 0, padding: '12px 20px 4px', textAlign: 'center' }}>
+        <h1 style={{ fontFamily: SERIF, fontSize: 22, fontWeight: 400, color: INK, margin: 0, letterSpacing: '-.01em', lineHeight: 1.1 }}>
           {title}
         </h1>
-        <div style={{ width: 28, height: 2, background: PINK, margin: '8px auto 0', borderRadius: 2 }} />
+        <div style={{ width: 28, height: 2, background: PINK, margin: '7px auto 0', borderRadius: 2 }} />
       </section>
 
-      <section style={{ flex: '1 1 auto', minHeight: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 8, padding: '4px 20px' }}>
-        <div style={{ fontFamily: SERIF, fontStyle: 'italic', color: PINK, fontSize: 15, fontWeight: 500, textAlign: 'center', marginBottom: 1 }}>
+      {/* Scrollable middle — guide tips + tagline + composer + track my day */}
+      <section style={{ flex: '1 1 auto', minHeight: 0, overflowY: 'auto', padding: '10px 20px 12px' }}>
+
+        {/* How to get the most from me */}
+        <div style={{ marginBottom: 14 }}>
+          <div style={{ fontFamily: SERIF, fontStyle: 'italic', color: PINK, fontSize: 13.5, fontWeight: 500, textAlign: 'center', marginBottom: 4 }}>
+            How to get the most from me ✦
+          </div>
+          {[
+            { emoji: '📸', title: 'Send a photo', body: "Snap your fridge, a menu, a food label, or a shelf. I'll tell you what's worth eating and why." },
+            { emoji: '💬', title: 'Just ask', body: "Tell me what you've got, what you fancy, or what you're trying to avoid today. No specific format needed." },
+            { emoji: '📋', title: 'Track your day', body: "Tell me what you've eaten and I'll score it against the Collagen Matrix and show you what to add tomorrow." },
+            { emoji: '🔄', title: 'Update your preferences anytime', body: "Tap 'Update my preferences' on the home screen whenever your situation changes." },
+          ].map(tip => (
+            <div key={tip.title} style={{ display: 'flex', alignItems: 'flex-start', gap: 14, padding: '10px 0', borderBottom: `1px solid ${LINE_SOFT}` }}>
+              <span style={{ fontSize: 20, flexShrink: 0, width: 28, textAlign: 'center' }}>{tip.emoji}</span>
+              <div>
+                <div style={{ fontFamily: SERIF, fontSize: 14, fontWeight: 500, color: INK, marginBottom: 2 }}>{tip.title}</div>
+                <div style={{ fontSize: 11.5, color: INK_SOFT, lineHeight: 1.45 }}>{tip.body}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ fontFamily: SERIF, fontStyle: 'italic', color: PINK, fontSize: 13.5, fontWeight: 500, textAlign: 'center', margin: '10px 0 8px' }}>
           Right, what are we doing today?
         </div>
 
-        {/* The real composer — same component used inside the chat screen
-            itself, with photo/camera/gallery support. Typing and hitting
-            send here takes you straight into the conversation with your
-            message already sent, no separate blank "Ask your Coach" screen
-            to click through first. */}
         <Composer
           mode={HOME_COMPOSER_MODE}
           input={input}
@@ -2031,18 +2048,19 @@ function HomeScreen({ profile, onOpen, onSend, onProfile }: { profile: CoachProf
           variant="pill"
         />
 
-        {/* Track my day — the one genuinely separate feature, kept as its
-            own pill button below the shared chat entry point */}
+        <div style={{ height: 8 }} />
+
         <button onClick={() => onOpen('track')} style={{
           width: '100%', display: 'flex', alignItems: 'center', gap: 10, textAlign: 'left', flexShrink: 0,
           border: '1.5px solid rgba(201,72,91,0.3)', background: BABY, borderRadius: 20, padding: '10px 16px', cursor: 'pointer',
         }}>
           <span style={{ flex: 1, minWidth: 0 }}>
-            <span style={{ display: 'block', fontFamily: SERIF, fontSize: 15, fontWeight: 500, color: PINK, lineHeight: 1.2 }}>Track my day</span>
+            <span style={{ display: 'block', fontFamily: SERIF, fontSize: 14, fontWeight: 500, color: PINK, lineHeight: 1.2 }}>Track my day</span>
             <span style={{ display: 'block', fontSize: 10.5, color: INK_SOFT, marginTop: 2, lineHeight: 1.25 }}>Log what you've had and I'll check the picture.</span>
           </span>
           <span style={{ color: PINK, fontSize: 17, flexShrink: 0 }}>›</span>
         </button>
+
       </section>
 
       <p style={{ flexShrink: 0, textAlign: 'center', fontSize: 8.5, color: MUTE, letterSpacing: '.08em', textTransform: 'uppercase', margin: '0 0 4px' }}>
@@ -2109,8 +2127,6 @@ function App() {
     const isDevHost =
       host.includes('lovableproject.com') ||
       host.includes('lovable.dev') ||
-      host.startsWith('id-preview--') ||
-      host.includes('-dev.lovable.app') ||
       host === 'localhost' ||
       host === '127.0.0.1'
     if (isDevHost) {
