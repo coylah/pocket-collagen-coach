@@ -2109,6 +2109,9 @@ function App() {
     const isDevHost =
       host.includes('lovableproject.com') ||
       host.includes('lovable.dev') ||
+      host.startsWith('id-preview--') ||
+      host.includes('-dev.lovable.app') ||
+      host.endsWith('.lovable.app') === false && host.includes('lovable') ||
       host === 'localhost' ||
       host === '127.0.0.1'
     if (isDevHost) {
