@@ -1394,6 +1394,7 @@ function Composer({
 }) {
   const cameraRef = useRef<HTMLInputElement>(null)
   const galleryRef = useRef<HTMLInputElement>(null)
+  const [showPhotoMenu, setShowPhotoMenu] = useState(false)
 
   const handleFile = (file?: File) => {
     if (!file) return
@@ -1406,23 +1407,50 @@ function Composer({
   if (variant === 'pill') {
     const canSend = !loading && (input.trim() || b64)
     return (
-      <div>
+      <div style={{ position: 'relative' }}>
         {preview && (
           <div style={{ position: 'relative', display: 'inline-block', marginBottom: 8 }}>
             <img src={preview} alt="preview" style={{ height: 60, borderRadius: 8, border: `1px solid ${LINE}` }} />
             <button onClick={() => { setPreview(null); setB64(null) }} style={{ position: 'absolute', top: -6, right: -6, background: INK, border: 'none', borderRadius: '50%', width: 22, height: 22, color: '#FFF', fontSize: 11, cursor: 'pointer' }}>✕</button>
           </div>
         )}
+
+        {/* Photo source menu — appears above the + button when tapped */}
+        {showPhotoMenu && (
+          <>
+            <div onClick={() => setShowPhotoMenu(false)} style={{ position: 'fixed', inset: 0, zIndex: 10 }} />
+            <div style={{
+              position: 'absolute', bottom: '100%', left: 0, marginBottom: 6, zIndex: 20,
+              background: '#FFF', border: `1.5px solid ${LINE}`, borderRadius: 14,
+              boxShadow: '0 4px 16px rgba(0,0,0,0.12)', overflow: 'hidden', minWidth: 180,
+            }}>
+              <button onClick={() => { setShowPhotoMenu(false); cameraRef.current?.click() }} style={{
+                width: '100%', display: 'flex', alignItems: 'center', gap: 10,
+                padding: '12px 16px', border: 'none', borderBottom: `1px solid ${LINE_SOFT}`,
+                background: '#FFF', cursor: 'pointer', fontFamily: SANS, fontSize: 14, color: INK, textAlign: 'left',
+              }}>
+                <span>📷</span> Take a photo
+              </button>
+              <button onClick={() => { setShowPhotoMenu(false); galleryRef.current?.click() }} style={{
+                width: '100%', display: 'flex', alignItems: 'center', gap: 10,
+                padding: '12px 16px', border: 'none',
+                background: '#FFF', cursor: 'pointer', fontFamily: SANS, fontSize: 14, color: INK, textAlign: 'left',
+              }}>
+                <span>🖼️</span> Choose from library
+              </button>
+            </div>
+          </>
+        )}
+
         <div style={{
           display: 'flex', alignItems: 'flex-end', gap: 8, border: `1.5px solid ${LINE}`, borderRadius: 26,
           padding: '10px 6px 10px 15px', background: '#FFF', boxShadow: '0 2px 8px rgba(0,0,0,0.05)', width: '100%',
         }}>
           {mode.photo && (
             <>
-              {/* No `capture` attribute — mobile OS shows its own native
-                  picker offering both camera and photo library from one tap */}
+              <input ref={cameraRef} type="file" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={e => handleFile(e.target.files?.[0])} />
               <input ref={galleryRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={e => handleFile(e.target.files?.[0])} />
-              <button onClick={() => galleryRef.current?.click()} style={{ background: 'none', border: 'none', color: MUTE, fontSize: 20, flexShrink: 0, cursor: 'pointer', padding: 0, lineHeight: 1.6 }}>+</button>
+              <button onClick={() => setShowPhotoMenu(m => !m)} style={{ background: 'none', border: 'none', color: MUTE, fontSize: 20, flexShrink: 0, cursor: 'pointer', padding: 0, lineHeight: 1.6 }}>+</button>
             </>
           )}
           <textarea
