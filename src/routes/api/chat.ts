@@ -23,23 +23,34 @@ export const Route = createFileRoute('/api/chat')({
     handlers: {
       POST: async ({ request }) => {
 
+        // Dev/preview bypass — mirrors the frontend login bypass so the app is
+        // testable in the Lovable editor without a session.
+        const host = (request.headers.get('host') || '').toLowerCase()
+        const devBypass =
+          host.includes('lovableproject.com') ||
+          host.includes('lovable.dev') ||
+          host.includes('id-preview--') ||
+          host.includes('-dev.lovable.app') ||
+          host.startsWith('localhost') ||
+          host.startsWith('127.0.0.1')
+
         // Auth check — verify the user has a valid Supabase session token.
         // The client sends the session access_token in the Authorization header.
         const authHeader = request.headers.get('authorization')
         const token = authHeader?.replace('Bearer ', '')
-        if (!token) {
+        if (!token && !devBypass) {
           return Response.json({ reply: 'Access denied' }, { status: 401 })
         }
 
         const SUPABASE_URL = process.env.SUPABASE_URL
         const SUPABASE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY
-        if (SUPABASE_URL && SUPABASE_KEY) {
+        if (token && SUPABASE_URL && SUPABASE_KEY) {
           const { createClient } = await import('@supabase/supabase-js')
           const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
             auth: { autoRefreshToken: false, persistSession: false }
           })
           const { data, error } = await supabase.auth.getUser(token)
-          if (error || !data?.user) {
+          if ((error || !data?.user) && !devBypass) {
             return Response.json({ reply: 'Access denied' }, { status: 401 })
           }
         }
