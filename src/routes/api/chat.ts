@@ -30,6 +30,7 @@ export const Route = createFileRoute('/api/chat')({
           host.includes('lovableproject.com') ||
           host.includes('lovable.dev') ||
           host.includes('id-preview--') ||
+          host.includes('preview--') ||
           host.includes('-dev.lovable.app') ||
           host.startsWith('localhost') ||
           host.startsWith('127.0.0.1')

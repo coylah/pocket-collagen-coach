@@ -2166,6 +2166,7 @@ function App() {
       host.includes('lovable.dev') ||
       host.includes('sandbox.lovable.dev') ||
       host.startsWith('id-preview--') ||
+      host.startsWith('preview--') ||
       host.endsWith('-dev.lovable.app') ||
       host === 'localhost' ||
       host === '127.0.0.1'
