@@ -1525,7 +1525,15 @@ function ChatScreen({ mode, profile, onBack, pending }: { mode: ChatMode; profil
     setLoading(true)
     const content: any[] = []
     if (b64) content.push({ type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: b64 } })
-    content.push({ type: 'text', text: input.trim() || mode.autoPrompt || '' })
+    const userText = input.trim()
+    const autoText = mode.autoPrompt || ''
+    // When a photo is present and there's an autoPrompt, always include it —
+    // even if the user also typed something. The autoPrompt carries critical
+    // format instructions (e.g. ===OPTIONS=== for menus) that must not be dropped.
+    const finalText = b64 && autoText
+      ? (userText ? `${userText}\n\n${autoText}` : autoText)
+      : (userText || autoText)
+    content.push({ type: 'text', text: finalText })
     const msg = { role: 'user', displayText: input.trim() || (preview ? 'Photo sent ✓' : ''), imagePreview: preview, content }
     const updated = [...messages, msg]
     setMessages(updated)
