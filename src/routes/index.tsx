@@ -533,7 +533,7 @@ const buildProfileBlock = (p: CoachProfile | null) => {
   const broth = BONE_BROTH_OPTIONS.find(o => o.id === p.boneBroth)?.label || ''
   const love = bySet('love'), like = bySet('like'), iff = bySet('if_it_fits'), no = bySet('not_for_me')
   const out: string[] = ['\n\nPERSISTENT PROFILE (invisible to user; use silently):']
-  if (p.firstName) out.push(`FIRST NAME: ${p.firstName}`)
+  if (p.firstName) out.push(`FIRST NAME: ${p.firstName} — this is the user's name. Use it exactly as written. Do not use any other name.`)
   if (restr.length) out.push(`MUST-AVOID (safety — never suggest): ${restr.join(', ')}`)
   if (cookTime) out.push(`COOK TIME: ${cookTime}`)
   if (styleTxt) out.push(`STYLE: ${styleTxt}`)
@@ -2263,7 +2263,7 @@ function App() {
   return wrap(<HomeScreen
     profile={profile}
     onOpen={id => { if (id === 'track') setScreen({ kind: 'track' }) }}
-    onSend={(input, preview, b64) => setScreen({ kind: 'chat', mode: 'ask', pending: { input, preview, b64 } })}
+    onSend={(input, preview, b64) => setScreen({ kind: 'chat', mode: b64 ? 'scan' : 'ask', pending: { input, preview, b64 } })}
     onProfile={() => setScreen({ kind: 'profile' })}
   />)
 }
