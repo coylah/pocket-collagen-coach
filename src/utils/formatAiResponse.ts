@@ -25,8 +25,11 @@ export function formatAiResponse(text: string): string {
     // Remove markdown heading markers but keep the heading text
     .replace(/^\s{0,3}#{1,6}\s+/gm, "")
 
-    // Keep bullet points. The old formatter stripped them and made outputs look like one ugly block.
+    // Keep bullet points — but NOT inside ===OPTIONS=== blocks where "- name:" is a required format marker.
+    // We temporarily protect OPTIONS blocks, convert bullets elsewhere, then restore.
+    .replace(/===OPTIONS===([\s\S]*?)===END===/g, (match) => match.replace(/\n- /g, '\n\u0000- '))
     .replace(/^\s*[-]\s+/gm, "• ")
+    .replace(/\u0000- /g, '- ')
 
     // Remove markdown bold/italic markers without removing content
     .replace(/\*\*(.*?)\*\*/g, "$1")
