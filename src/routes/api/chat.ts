@@ -86,6 +86,9 @@ export const Route = createFileRoute('/api/chat')({
             },
             body: JSON.stringify({
               contents,
+              generationConfig: {
+                maxOutputTokens: 4096,
+              },
               ...(system
                 ? { systemInstruction: { parts: [{ text: system }] } }
                 : {}),
